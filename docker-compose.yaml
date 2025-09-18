@@ -1,18 +1,34 @@
     # master-project/docker-compose.yaml
-    version: '3.8'
 
     services:
       # Speech-to-Text Application
       stt:
         build:
-          context: ./services/stt  # Points to the app's directory
-        container_name: stt
+          context: ./services/max-stt  # Points to the app's directory
+          args:
+            - PYTHON_VERSION=3.11
+        #container_name: max-stt
+        # image: image name set in override files
         # No ports exposed here in production!
         environment:
           # ... your app-specific environment variables ...
+          - APP_NAME=stt
+          - MODEL_SIZE=large-v3
+          - DEVICE=cuda
+          - COMPUTE_TYPE=float16
         volumes:
           - model_cache:/home/appuser/.cache
           # ... other volumes ...
+          # --- GPU / CPU Configuration ---
+          # To switch to CPU, comment out the 'deploy' section below and
+          # set DEVICE=cpu and COMPUTE_TYPE=int8 in the environment variables.
+        deploy:
+          resources:
+            reservations:
+              devices:
+                - driver: nvidia
+                  count: 1
+                  capabilities: [gpu]
 
       # LangChain Application
       max:
@@ -24,7 +40,7 @@
       # Ollama Service
       ollama:
         image: ollama/ollama:latest
-        container_name: ollama
+        container_name: max-ollama
         # ... ollama configuration ...
 
       # Reverse Proxy (this is the public gateway)

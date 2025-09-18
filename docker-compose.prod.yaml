@@ -1,0 +1,31 @@
+name: max-prod
+services:
+  stt:
+    image: stt-prod:latest
+    container_name: stt-prod
+    build:
+      target: prod
+      # Context is set to services/max-stt in docker-compose.yaml
+      dockerfile: Dockerfile
+    # ports are not exposed
+    restart: unless-stopped
+    command: ["python", "-m", "src.app"]
+
+
+  proxy:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Mount the production template
+      - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
+      # Mount your SSL certificates (obtained via Certbot or another provider)
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - stt
+    environment:
+      # Define the variables used in the template
+      - UPSTREAM_HOST=stt
+      - UPSTREAM_PORT=8765
+      - SERVER_NAME=rb-desktop # <-- IMPORTANT: Change this to your actual domain
+
