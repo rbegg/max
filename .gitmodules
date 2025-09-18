@@ -1,0 +1,3 @@
+[submodule "services/max-stt"]
+	path = services/max-stt
+	url = git@github.com:rbegg/max-stt.git
