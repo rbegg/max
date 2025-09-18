@@ -1,0 +1,39 @@
+    # master-project/docker-compose.yaml
+    version: '3.8'
+
+    services:
+      # Speech-to-Text Application
+      stt:
+        build:
+          context: ./services/stt  # Points to the app's directory
+        container_name: stt
+        # No ports exposed here in production!
+        environment:
+          # ... your app-specific environment variables ...
+        volumes:
+          - model_cache:/home/appuser/.cache
+          # ... other volumes ...
+
+      # LangChain Application
+      max:
+        build:
+          context: ./services/max
+        container_name: max
+        # ...
+
+      # Ollama Service
+      ollama:
+        image: ollama/ollama:latest
+        container_name: ollama
+        # ... ollama configuration ...
+
+      # Reverse Proxy (this is the public gateway)
+      proxy:
+        image: nginx:latest
+        container_name: proxy
+        # Port mapping and volumes will be defined in dev/prod override files
+
+    volumes:
+      model_cache:
+        external: true
+        # ...
