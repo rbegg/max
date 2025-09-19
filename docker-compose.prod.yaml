@@ -2,7 +2,6 @@ name: max-prod
 services:
   stt:
     image: stt-prod:latest
-    container_name: stt-prod
     build:
       target: prod
       # Context is set to services/max-stt in docker-compose.yaml

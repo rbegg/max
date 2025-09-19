@@ -34,19 +34,16 @@
       max:
         build:
           context: ./services/max
-        container_name: max
         # ...
 
       # Ollama Service
       ollama:
         image: ollama/ollama:latest
-        container_name: max-ollama
         # ... ollama configuration ...
 
       # Reverse Proxy (this is the public gateway)
       proxy:
         image: nginx:latest
-        container_name: proxy
         # Port mapping and volumes will be defined in dev/prod override files
 
     volumes:

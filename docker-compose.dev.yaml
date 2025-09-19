@@ -2,7 +2,6 @@ name: max-dev
 services:
   stt:
     image: stt-dev:latest
-    container_name: stt-dev
     build:
       target: dev
       # Context is set to services/max-stt in docker-compose.yaml
@@ -30,8 +29,8 @@ services:
 
   proxy:
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       # 1. Mount the template to the correct directory
       - ./proxy/nginx/dev.conf.template:/etc/nginx/templates/default.conf.template:ro
