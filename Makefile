@@ -15,8 +15,15 @@ dev-down:
 
 ## Get an interactive shell inside the running dev container
 dev-stt-shell:
-	$(DEV_COMPOSE) exec max-dev_max-stt bash
+	$(DEV_COMPOSE) exec max-dev-max-stt bash
 
+	## Get an interactive shell inside the running dev container
+dev-max-shell:
+	$(DEV_COMPOSE) exec max ash
+
+## Get an interactive shell inside the running dev container
+dev-ollama-shell:
+	$(DEV_COMPOSE) exec ollama bash
 
 # --- Production Commands ---
 

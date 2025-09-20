@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ollama:
+    build: .
+    container_name: ollama-gpu
+    restart: unless-stopped
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    ports:
+      - "11434:11434"
+
+    volumes:
+      # Mount the named volume to the NEW non-root user's models directory
+      - ollama_models:/home/ollama/.ollama
+
+volumes:
+  ollama_models:
