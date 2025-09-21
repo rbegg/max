@@ -1,3 +1,6 @@
 [submodule "services/max-stt"]
 	path = services/max-stt
 	url = git@github.com:rbegg/max-stt.git
+[submodule "services/max-langgraph"]
+	path = services/max-langgraph
+	url = git@github.com:rbegg/max-langgraph.git
