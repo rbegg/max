@@ -31,9 +31,9 @@
                   capabilities: [gpu]
 
       # LangChain Application
-      max:
-        build:
-          context: ./services/max
+#      max:
+#        build:
+#          context: ./services/max
         # ...
 
       # Ollama Service
