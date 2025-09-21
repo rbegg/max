@@ -1,4 +1,4 @@
-name: max-prod
+name: ${COMPOSE_PROJECT_NAME:-max}-prod
 services:
   stt:
     image: stt-prod:latest
@@ -13,8 +13,8 @@ services:
 
   proxy:
     ports:
-      - "80:80"
-      - "443:443"
+      - "${PROD_PROXY_HTTP_PORT:-80}:80"
+      - "${PROD_PROXY_HTTPS_PORT:-443}:443"
     volumes:
       # Mount the production template
       - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
@@ -24,7 +24,7 @@ services:
       - stt
     environment:
       # Define the variables used in the template
-      - UPSTREAM_HOST=stt
-      - UPSTREAM_PORT=8765
-      - SERVER_NAME=rb-desktop # <-- IMPORTANT: Change this to your actual domain
+      - UPSTREAM_HOST=${UPSTREAM_HOST:-stt}
+      - UPSTREAM_PORT=${UPSTREAM_PORT:-8765}
+      - SERVER_NAME=${PROD_SERVER_NAME:-your-domain.com} # <-- IMPORTANT: Change this in your .env file
 

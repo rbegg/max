@@ -1,4 +1,4 @@
-name: max-dev
+name: ${COMPOSE_PROJECT_NAME:-max}-dev
 services:
   stt:
     image: stt-dev:latest
@@ -29,8 +29,8 @@ services:
 
   proxy:
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "${DEV_PROXY_HTTP_PORT:-8080}:80"
+      - "${DEV_PROXY_HTTPS_PORT:-8443}:443"
     volumes:
       # 1. Mount the template to the correct directory
       - ./proxy/nginx/dev.conf.template:/etc/nginx/templates/default.conf.template:ro
@@ -39,9 +39,12 @@ services:
       - stt
     # 2. Add the environment section to define your variables
     environment:
-      - UPSTREAM_HOST=stt
-      - UPSTREAM_PORT=8765
+      - UPSTREAM_HOST=${UPSTREAM_HOST:-stt}
+      - UPSTREAM_PORT=${UPSTREAM_PORT:-8765}
 
+  ollama:
+    ports:
+    - "11434:11434"
     # Define the named volume for the virtual environment
 volumes:
   venv:

@@ -1,3 +1,5 @@
 proxy/certs
 .idea
 .venv
+.env
+*.env.local

@@ -11,11 +11,11 @@
         # image: image name set in override files
         # No ports exposed here in production!
         environment:
-          # ... your app-specific environment variables ...
+          # ... environment variables ...
           - APP_NAME=stt
-          - MODEL_SIZE=large-v3
-          - DEVICE=cuda
-          - COMPUTE_TYPE=float16
+          - MODEL_SIZE=${STT_MODEL_SIZE:-large-v3}
+          - DEVICE=${STT_DEVICE:-cuda}
+          - COMPUTE_TYPE=${STT_COMPUTE_TYPE:-float16}
         volumes:
           - model_cache:/home/appuser/.cache
           # ... other volumes ...
@@ -37,10 +37,11 @@
         # ...
 
       # Ollama Service
+      # only available to backend services, no host mapping
 
       ollama:
         build: ./services/ollama
-        container_name: ollama-gpu
+        #container_name: ollama-gpu
         restart: unless-stopped
 
         deploy:
@@ -50,9 +51,6 @@
                 - driver: nvidia
                   count: all
                   capabilities: [gpu]
-
-        ports:
-          - "11434:11434"
 
         volumes:
           # Mount the named volume to the NEW non-root user's models directory
