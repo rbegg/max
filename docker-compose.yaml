@@ -41,7 +41,7 @@
 
       ollama:
         build: ./services/ollama
-        #container_name: ollama-gpu
+        image: ollama-gpu
         restart: unless-stopped
 
         deploy:
