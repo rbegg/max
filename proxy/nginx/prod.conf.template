@@ -1,71 +1,69 @@
-# Defines a group of servers that NGINX can proxy requests to.
-# This makes the configuration cleaner and easier to manage.
-upstream backend_service {
-    # The 'stt' service, running on its internal port.
-    server ${UPSTREAM_HOST}:${UPSTREAM_PORT};
-}
 
-# --- HTTP to HTTPS Redirect ---
-# This server block catches all HTTP traffic on port 80 and permanently
-# redirects it to the corresponding HTTPS URL.
-server {
-    listen 80;
-    # Listens for requests for your specific domain name.
-    server_name ${SERVER_NAME};
 
-    # Returns a 301 Permanent Redirect to the browser.
-    return 301 https://$server_name$request_uri;
-}
-
-# --- Main HTTPS Server ---
-# This block handles all secure traffic for your application.
-server {
-    listen 443 ssl http2;
-    server_name ${SERVER_NAME};
-
-    # --- SSL Certificate Configuration ---
-    # These paths are standard for certificates obtained via Let's Encrypt/Certbot.
-    ssl_certificate /etc/letsencrypt/live/${SERVER_NAME}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${SERVER_NAME}/privkey.pem;
-
-    # --- SSL/TLS Hardening ---
-    # Enforces modern, secure protocols and ciphers.
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:ECDHE-RSA-AES128-GCM-SHA256';
-    ssl_prefer_server_ciphers off;
-
-    # --- Security Headers ---
-    # Tells browsers to only connect via HTTPS for the next 2 years.
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
-    # Prevents clickjacking attacks.
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    # Prevents MIME-type sniffing security vulnerabilities.
-    add_header X-Content-Type-Options "nosniff" always;
-
-    # --- Performance: Gzip Compression ---
-    # Compresses common text-based assets to reduce bandwidth.
-    gzip on;
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 6;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-
-    # --- Application Routing ---
-    # Location for WebSocket connections (e.g., /ws)
-    location /ws {
-        proxy_pass http://backend_service;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
+    # Define the backend services. Using 127.0.0.1 is best if all services
+    # are on the same machine. Use the service's internal IP if they are not.
+    upstream web_server {
+        server web-server;
+    }
+    upstream assistant_service {
+        server ${ASSISTANT_HOST};
     }
 
-    # Location for all other standard HTTP requests
-    location / {
-        proxy_pass http://backend_service;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+    # --------------------------------------------------------------------------
+    # HTTP Server Block: Redirects all HTTP traffic to HTTPS
+    # --------------------------------------------------------------------------
+    server {
+        listen 80;
+        server_name ${SERVER_NAME};
+
+        # Redirect any HTTP request to the secure HTTPS version.
+        location / {
+            return 301 https://$host$request_uri;
+        }
     }
-}
+
+    # --------------------------------------------------------------------------
+    # HTTPS Server Block: The main application entry point
+    # --------------------------------------------------------------------------
+    server {
+        listen 443 ssl;
+        server_name _;
+
+        # --- SSL/TLS Configuration ---
+        ssl_certificate ${SSL_CERTIFICATE_PATH};
+        ssl_certificate_key ${SSL_CERTIFICATE_KEY_PATH};
+
+        # --- Security Best Practices ---
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers off;
+        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+        ssl_ecdh_curve secp384r1;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        ssl_session_tickets off;
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+
+        # --- Location Routing ---
+
+        # Rule 1: Route standard HTTP traffic to the Web Server for the UI
+        location / {
+            proxy_pass http://web_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Rule 2: Route the client's WebSocket (wss://) to the Assistant Service
+        location /ws {
+            proxy_pass http://assistant_service;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }

@@ -1,4 +1,4 @@
-name: ${COMPOSE_PROJECT_NAME:-max}-prod
+name: ${COMPOSE_PROJECT_NAME:-max}
 services:
   stt:
     image: stt-prod:latest
@@ -20,11 +20,5 @@ services:
       - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
       # Mount your SSL certificates (obtained via Certbot or another provider)
       - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - stt
-    environment:
-      # Define the variables used in the template
-      - UPSTREAM_HOST=${UPSTREAM_HOST:-stt}
-      - UPSTREAM_PORT=${UPSTREAM_PORT:-8765}
-      - SERVER_NAME=${PROD_SERVER_NAME:-your-domain.com} # <-- IMPORTANT: Change this in your .env file
+
 

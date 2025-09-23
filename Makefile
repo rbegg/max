@@ -1,7 +1,7 @@
 # Makefile for managing Docker Compose environments
 
-DEV_COMPOSE = docker compose -p max-dev -f docker-compose.yaml -f docker-compose.dev.yaml
-PROD_COMPOSE = docker compose -p max-prod -f docker-compose.yaml -f docker-compose.prod.yaml
+DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
+PROD_COMPOSE = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
 
 # --- Development Commands ---
 

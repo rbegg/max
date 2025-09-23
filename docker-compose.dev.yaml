@@ -1,7 +1,7 @@
-name: ${COMPOSE_PROJECT_NAME:-max}-dev
+name: ${COMPOSE_PROJECT_NAME:-max-dev}
 services:
   stt:
-    image: stt-dev:latest
+    image: stt-dev
     build:
       target: dev
       # Context is set to services/max-stt in docker-compose.yaml
@@ -15,9 +15,9 @@ services:
       #- ./data:/app/data
       # 2. Use a named volume for node_modules for performance
       #  node-modules:/workspaces/my-project/node_modules
-    ports:
-      # Expose a port for a web server, API, etc  host:container
-      - "8765:8765"
+    #ports:
+      # Expose a port for a web-server server, API, etc  host:container
+    #  - "8765:8765"
     # recommended to not use restart for dev
     # restart: unless-stopped
 
@@ -29,18 +29,13 @@ services:
 
   proxy:
     ports:
-      - "${DEV_PROXY_HTTP_PORT:-8080}:80"
-      - "${DEV_PROXY_HTTPS_PORT:-8443}:443"
+      - "${PROXY_HTTP_PORT:-8080}:80"
+      - "${PROXY_HTTPS_PORT:-8443}:443"
     volumes:
       # 1. Mount the template to the correct directory
       - ./proxy/nginx/dev.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./proxy/certs:/etc/nginx/certs:ro
-    depends_on:
-      - stt
-    # 2. Add the environment section to define your variables
-    environment:
-      - UPSTREAM_HOST=${UPSTREAM_HOST:-stt}
-      - UPSTREAM_PORT=${UPSTREAM_PORT:-8765}
+
 
   ollama:
     ports:
