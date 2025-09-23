@@ -1,50 +1,86 @@
-# This is now a template file
+# NGINX template file
+#
+# This file is used to generate the NGINX configuration file for the
+# development environment.
+#
+
+    # Define the backend services. Using 127.0.0.1 is best if all services
+    # are on the same machine. Use the service's internal IP if they are not.
+    upstream web_server {
+        server web-server;
+    }
+    upstream assistant_service {
+        server ${ASSISTANT_HOST};
+    }
 
 server {
     listen 80;
     server_name _;
 
-    # Location for WebSocket connections
-    location /ws {
-        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-    }
+        # --- Location Routing ---
 
-    # Location for all other standard HTTP requests
-    location / {
-        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+        # Rule 1: Route standard HTTP traffic to the Web Server for the UI
+        location / {
+            proxy_pass http://web_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Rule 2: Route the client's WebSocket (wss://) to the Assistant Service
+        location /ws {
+            proxy_pass http://assistant_service;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
 }
 
-server {
-    listen 443 ssl;
-    server_name _;
+    # --------------------------------------------------------------------------
+    # HTTPS Server Block: The main application entry point
+    # --------------------------------------------------------------------------
+    server {
+        listen 443 ssl;
+        server_name _;
 
-    ssl_certificate /etc/nginx/certs/cert.pem;
-    ssl_certificate_key /etc/nginx/certs/key.pem;
+        # --- SSL/TLS Configuration ---
+        ssl_certificate ${SSL_CERTIFICATE_PATH};
+        ssl_certificate_key ${SSL_CERTIFICATE_KEY_PATH};
 
-    # Location for WebSocket connections
-    location /ws {
-        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
+        # --- Security Best Practices ---
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers off;
+        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+        ssl_ecdh_curve secp384r1;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        ssl_session_tickets off;
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+
+        # --- Location Routing ---
+
+        # Rule 1: Route standard HTTP traffic to the Web Server for the UI
+        location / {
+            proxy_pass http://web_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Rule 2: Route the client's WebSocket (wss://) to the Assistant Service
+        location /ws {
+            proxy_pass http://assistant_service;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
     }
-
-    # Location for all other standard HTTP requests
-    location / {
-        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}

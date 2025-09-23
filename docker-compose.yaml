@@ -30,18 +30,24 @@
                   count: 1
                   capabilities: [gpu]
 
-      # LangChain Application
-#      max:
-#        build:
-#          context: ./services/max
+      # max-assistant Service
+      assistant:
+        build:
+          context: ./services/max-assistant
+        depends_on:
+          - stt
         # ...
+
+      web-server:
+        build: ./services/web-server
+        # No ports are published; access is only via Nginx
 
       # Ollama Service
       # only available to backend services, no host mapping
 
       ollama:
         build: ./services/ollama
-        #container_name: ollama-gpu
+        image: ollama-gpu
         restart: unless-stopped
 
         deploy:
@@ -60,6 +66,18 @@
       proxy:
         image: nginx:latest
         # Port mapping and volumes will be defined in dev/prod override files
+        depends_on:
+          - stt
+          - assistant
+          - web-server
+        environment:
+          # Define the variables used in the template
+          - SERVER_NAME=${SERVER_NAME} # <-- IMPORTANT: Change this in your .env file
+          - PROXY_WORK_PROCESSES=${PROXY_WORK_PROCESSES:-auto}
+          #- ASSISTANT_HOST=${ASSISTANT_HOST:-assistant}
+          - ASSISTANT_HOST=${ASSISTANT_HOST:-stt}
+          - SSL_CERTIFICATE_PATH= ${SSL_CERTIFICATE_PATH}
+          - SSL_CERTIFICATE_KEY_PATH= ${SSL_CERTIFICATE_KEY_PATH}
 
     volumes:
       model_cache:

@@ -1,4 +1,4 @@
-name: ${COMPOSE_PROJECT_NAME:-max}-prod
+name: ${COMPOSE_PROJECT_NAME:-max}
 services:
   stt:
     image: stt-prod:latest
@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     # ports are not exposed
     restart: unless-stopped
-    command: ["python", "-m", "src.app"]
+
 
 
   proxy:
@@ -16,15 +16,11 @@ services:
       - "${PROD_PROXY_HTTP_PORT:-80}:80"
       - "${PROD_PROXY_HTTPS_PORT:-443}:443"
     volumes:
+      # mount a replacement nginx.cong to set workers to 1
+      - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # Mount the production template
       - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
       # Mount your SSL certificates (obtained via Certbot or another provider)
       - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - stt
-    environment:
-      # Define the variables used in the template
-      - UPSTREAM_HOST=${UPSTREAM_HOST:-stt}
-      - UPSTREAM_PORT=${UPSTREAM_PORT:-8765}
-      - SERVER_NAME=${PROD_SERVER_NAME:-your-domain.com} # <-- IMPORTANT: Change this in your .env file
+
 

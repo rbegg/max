@@ -1,5 +1,5 @@
 # Use an official NVIDIA CUDA runtime image as a parent image.
-ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
+ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
 
 FROM ${BASE_IMAGE}
 
