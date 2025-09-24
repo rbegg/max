@@ -11,10 +11,30 @@ function handleWebSocketMessage(event) {
         audio.play();
         console.log("Played audio response.");
     } else {
-        // Otherwise, it's a text message (transcription)
-        const transcription = event.data;
-        if (transcription) {
-            updateTranscription(transcription);
+        // Otherwise, assume it's a text message, potentially JSON
+        console.log("Received message:", event.data);
+        try {
+            const messageData = JSON.parse(event.data);
+            
+            // Now you can access properties from your JSON object
+            const transcription = messageData.transcript;
+
+            if (transcription) {
+                updateTranscription(transcription);
+            }
+
+            // You can also use other data from the JSON
+            if (messageData.is_final) {
+                console.log("Received a final transcription result.");
+            }
+
+        } catch (error) {
+            // If it's not valid JSON, you could treat it as plain text as a fallback
+            console.warn("Received message is not valid JSON, treating as plain text.");
+            const transcription = event.data;
+            if (transcription) {
+                updateTranscription(transcription);
+            }
         }
     }
 }
