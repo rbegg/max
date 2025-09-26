@@ -12,16 +12,50 @@
         <div id="status">Press Start to begin</div>
         <div id="vad-indicator" title="Voice Activity Indicator"></div>
 
-        <div id="vad-settings">
-            <div>
-                <label for="threshold">Speech Threshold:</label>
-                <input type="range" id="threshold" min="0.2" max="0.9" step="0.05" value="0.5">
-                <span id="threshold-value">0.50</span>
+        <div id="settings-container">
+            <div id="vad-settings">
+                <h3>VAD Settings</h3>
+                <div>
+                    <label for="threshold">Speech Threshold:</label>
+                    <input type="range" id="threshold" min="0.005" max="0.200" step="0.005" value="0.030">
+                    <span id="threshold-value">0.030</span>
+                </div>
+                <div>
+                    <label for="pause-duration">Pause Duration (ms):</label>
+                    <input type="range" id="pause-duration" min="50" max="2000" step="50" value="480">
+                    <span id="duration-value">480 ms</span>
+                </div>
+                <div>
+                    <label for="pre-speech-pad">Pre-speech Padding (ms):</label>
+                    <input type="range" id="pre-speech-pad" min="0" max="1000" step="50" value="200">
+                    <span id="pre-speech-pad-value">200 ms</span>
+                </div>
+                <div>
+                    <label>Buffer Size:</label>
+                    <div id="buffer-size-options" class="radio-group">
+                        <label><input type="radio" name="buffer-size" value="1024"> 1024</label>
+                        <label><input type="radio" name="buffer-size" value="2048"> 2048</label>
+                        <label><input type="radio" name="buffer-size" value="4096" checked> 4096</label>
+                        <label><input type="radio" name="buffer-size" value="8192"> 8192</label>
+                        <label><input type="radio" name="buffer-size" value="16384"> 16384</label>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label for="pause-duration">Pause Duration (ms):</label>
-                <input type="range" id="pause-duration" min="50" max="2000" step="50" value="480">
-                <span id="duration-value">480 ms</span>
+
+            <div id="debug-settings">
+                <h3>Debug Options</h3>
+                <div>
+                    <label for="log-level">Log Level:</label>
+                    <select id="log-level">
+                        <option value="0">None</option>
+                        <option value="1" selected>Standard</option>
+                        <option value="2">Verbose (Energy)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="audio-passthrough">Enable Speaker Passthrough:</label>
+                    <input type="checkbox" id="audio-passthrough" checked>
+                </div>
             </div>
         </div>
 
@@ -34,10 +68,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.9/dist/bundle.min.js"></script>
-
     <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>
-
