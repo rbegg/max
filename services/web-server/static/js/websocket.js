@@ -20,12 +20,7 @@ function handleWebSocketMessage(event) {
             const transcription = messageData.transcript;
 
             if (transcription) {
-                updateTranscription(transcription);
-            }
-
-            // You can also use other data from the JSON
-            if (messageData.is_final) {
-                console.log("Received a final transcription result.");
+                updateTranscription(transcription, 'user');
             }
 
         } catch (error) {
@@ -33,7 +28,7 @@ function handleWebSocketMessage(event) {
             console.warn("Received message is not valid JSON, treating as plain text.");
             const transcription = event.data;
             if (transcription) {
-                updateTranscription(transcription);
+                updateTranscription(transcription, true);
             }
         }
     }

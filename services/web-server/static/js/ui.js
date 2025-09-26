@@ -27,9 +27,14 @@ export function updateStatus(message) {
     elements.statusDiv.textContent = message;
 }
 
-export function updateTranscription(text) {
-    const p = elements.transcriptionDiv.querySelector('p');
-    p.textContent = text;
+export function updateTranscription(text, source) {
+    const p = document.createElement('p');
+    p.classList.add(`${source}-message`); // Adds 'user-message' or 'llm-message' class
+
+    const prefix = source === 'user' ? '[Me]: ' : '[Max]: ';
+    p.textContent = prefix + text;
+
+    elements.transcriptionDiv.prepend(p);
 }
 
 export function setRecordingState(isRecording) {
@@ -38,7 +43,8 @@ export function setRecordingState(isRecording) {
     elements.thresholdInput.disabled = isRecording;
     elements.pauseDurationInput.disabled = isRecording;
     if (isRecording) {
-        updateTranscription("");
+        // Clear previous transcription results
+        elements.transcriptionDiv.innerHTML = "";
         elements.vadIndicator.classList.remove('speaking');
     } else {
         elements.vadIndicator.classList.remove('speaking');

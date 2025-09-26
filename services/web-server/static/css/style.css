@@ -62,14 +62,19 @@ button:disabled {
     margin-bottom: 1rem;
 }
 #transcription {
-    text-align: left;
-    padding: 1rem;
-    border: 1px solid #dfe1e5;
-    border-radius: 8px;
-    min-height: 100px;
-    line-height: 1.5;
-    background-color: #fafafa;
+    height: 300px;
     overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+}
+.user-message {
+    font-weight: bold;
+    text-align: left;
+}
+.llm-message {
+    color: #2a77d1;
+    text-align: right;
 }
 #vad-indicator {
     width: 20px;
