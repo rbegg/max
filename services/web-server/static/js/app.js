@@ -29,9 +29,8 @@ async function startRecording() {
             redemptionFrames: redemptionFrames,
             onSpeechEndCallback: (audio) => {
                 if (websocket && websocket.readyState === WebSocket.OPEN) {
-                    const wavBuffer = vad.utils.encodeWAV(audio);
-                    const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
-                    websocket.send(wavBlob);
+                    const flt32Blob = new Blob([audio.buffer], { type: 'application/octet-stream' });
+                    websocket.send(flt32Blob);
                 }
             }
         });
