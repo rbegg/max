@@ -17,10 +17,10 @@ function handleWebSocketMessage(event) {
             const messageData = JSON.parse(event.data);
             
             // Now you can access properties from your JSON object
-            const transcription = messageData.transcript;
+            const messageText = messageData.data;
 
-            if (transcription) {
-                updateTranscription(transcription, 'user');
+            if (messageText) {
+                updateTranscription(messageText, messageData.source);
             }
 
         } catch (error) {
