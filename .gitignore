@@ -4,3 +4,4 @@ proxy/certs
 .env
 .env.dev
 *.env.local
+node_modules/

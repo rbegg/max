@@ -1,20 +1,48 @@
 name: ${COMPOSE_PROJECT_NAME:-max}
+
 services:
+  # -------------------------------------------------------------------------------------
+  # web-server SERVICE
+  # -------------------------------------------------------------------------------------
+  web-server:
+    image: web-server-prod
+    build:
+      target: prod
+      # Context & Dockerfile is set to services/web-server in docker-compose.yaml
+
+  # -------------------------------------------------------------------------------------
+  # STT SERVICE
+  # -------------------------------------------------------------------------------------
   stt:
-    image: stt-prod:latest
+    image: stt-prod
     build:
       target: prod
       # Context is set to services/max-stt in docker-compose.yaml
       dockerfile: Dockerfile
     # ports are not exposed
     restart: unless-stopped
+    #command: ["sleep", "infinity"]
 
+    # -------------------------------------------------------------------------------------
+    # ASSISTANT SERVICE
+    # -------------------------------------------------------------------------------------
+  assistant:
+    image: assistant-prod
+    build:
+      target: prod
 
+  # -------------------------------------------------------------------------------------
+  # ollama SERVICE
+  # -------------------------------------------------------------------------------------
+  # common image
 
+  # -------------------------------------------------------------------------------------
+  # proxy SERVICE
+  # -------------------------------------------------------------------------------------
   proxy:
     ports:
-      - "${PROD_PROXY_HTTP_PORT:-80}:80"
-      - "${PROD_PROXY_HTTPS_PORT:-443}:443"
+      - "${PROXY_HTTP_PORT:-80}:80"
+      - "${PROXY_HTTPS_PORT:-443}:443"
     volumes:
       # mount a replacement nginx.cong to set workers to 1
       - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro

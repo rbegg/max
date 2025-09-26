@@ -1,10 +1,28 @@
     # master-project/docker-compose.yaml
 
     services:
-      # Speech-to-Text Application
+      # -------------------------------------------------------------------------------------
+      # web-server SERVICE
+      # -------------------------------------------------------------------------------------
+      web-server:
+        build:
+          context: ./services/web-server
+          dockerfile: Dockerfile
+          # Target is set in override files
+          args:
+            - PYTHON_VERSION=3.11
+        expose:
+          - "80"
+        user: appuser
+
+      # -------------------------------------------------------------------------------------
+      # STT SERVICE
+      # -------------------------------------------------------------------------------------
       stt:
         build:
           context: ./services/max-stt  # Points to the app's directory
+          dockerfile: Dockerfile
+          # Target is set in override files
           args:
             - PYTHON_VERSION=3.11
         #container_name: max-stt
@@ -16,6 +34,7 @@
           - MODEL_SIZE=${STT_MODEL_SIZE:-large-v3}
           - DEVICE=${STT_DEVICE:-cuda}
           - COMPUTE_TYPE=${STT_COMPUTE_TYPE:-float16}
+        user: appuser
         volumes:
           - model_cache:/home/appuser/.cache
           # ... other volumes ...
@@ -30,26 +49,30 @@
                   count: 1
                   capabilities: [gpu]
 
-      # max-assistant Service
+      # -------------------------------------------------------------------------------------
+      # ASSISTANT SERVICE
+      # -------------------------------------------------------------------------------------
       assistant:
         build:
           context: ./services/max-assistant
+          dockerfile: Dockerfile
+          # Target is set in override files
+          args:
+            - PYTHON_VERSION=3.11
+        user: appuser
         depends_on:
           - stt
-        # ...
 
-      web-server:
-        build: ./services/web-server
-        # No ports are published; access is only via Nginx
 
-      # Ollama Service
-      # only available to backend services, no host mapping
-
+      # -------------------------------------------------------------------------------------
+      # Ollama SERVICE
+      # -------------------------------------------------------------------------------------
       ollama:
-        build: ./services/ollama
+        build:
+          context: ./services/ollama
+          dockerfile: Dockerfile
         image: ollama-gpu
         restart: unless-stopped
-
         deploy:
           resources:
             reservations:
@@ -57,12 +80,13 @@
                 - driver: nvidia
                   count: all
                   capabilities: [gpu]
-
         volumes:
           # Mount the named volume to the NEW non-root user's models directory
           - ollama_models:/home/ollama/.ollama
 
-      # Reverse Proxy (this is the public gateway)
+      # -------------------------------------------------------------------------------------
+      # proxy SERVICE
+      # -------------------------------------------------------------------------------------
       proxy:
         image: nginx:latest
         # Port mapping and volumes will be defined in dev/prod override files
@@ -71,11 +95,13 @@
           - assistant
           - web-server
         environment:
-          # Define the variables used in the template
+          # Define the variables used in the proxy/nginx/*.conf.template files to gen nginx config
+          # values read from the .env file will override the defaults here
           - SERVER_NAME=${SERVER_NAME} # <-- IMPORTANT: Change this in your .env file
+          - PROXY_HTTP_PORT=${PROXY_HTTP_PORT:-80}
+          - PROXY_HTTPS_PORT=${PROXY_HTTPS_PORT:-443}
           - PROXY_WORK_PROCESSES=${PROXY_WORK_PROCESSES:-auto}
-          #- ASSISTANT_HOST=${ASSISTANT_HOST:-assistant}
-          - ASSISTANT_HOST=${ASSISTANT_HOST:-stt}
+          - ASSISTANT_HOST=${ASSISTANT_HOST:-assistant}
           - SSL_CERTIFICATE_PATH= ${SSL_CERTIFICATE_PATH}
           - SSL_CERTIFICATE_KEY_PATH= ${SSL_CERTIFICATE_KEY_PATH}
 
