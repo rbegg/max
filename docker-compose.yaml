@@ -59,6 +59,9 @@
           # Target is set in override files
           args:
             - PYTHON_VERSION=3.11
+        environment:
+          - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+          - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3}
         user: appuser
         depends_on:
           - stt

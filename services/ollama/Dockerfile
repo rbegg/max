@@ -26,7 +26,7 @@ RUN mkdir -p ${OLLAMA_MODELS} && \
 USER ollama
 
 # Expose the port Ollama listens on
-EXPOSE 11434
+EXPOSE 80
 
 # Set the entrypoint to run Ollama as the 'ollama' user
 ENTRYPOINT [ "ollama", "serve" ]
