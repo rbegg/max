@@ -16,7 +16,7 @@
         user: appuser
 
       # -------------------------------------------------------------------------------------
-      # STT SERVICE
+      # STT SERVICE - Speach to text
       # -------------------------------------------------------------------------------------
       stt:
         build:
@@ -48,6 +48,17 @@
                 - driver: nvidia
                   count: 1
                   capabilities: [gpu]
+
+      # -------------------------------------------------------------------------------------
+      # TTS SERVICE - Text To Speach
+      # -------------------------------------------------------------------------------------
+      tts:
+        image: rhasspy/wyoming-piper
+        command: --voice ${TTS_VOICE:-en_US-lessac-medium}
+        volumes:
+          - stt_models:/config
+        expose:
+          - 10200
 
       # -------------------------------------------------------------------------------------
       # ASSISTANT SERVICE
@@ -112,5 +123,7 @@
       model_cache:
         external: true
       ollama_models:
+        external: true
+      stt_models:
         external: true
         # ...
