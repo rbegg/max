@@ -15,6 +15,7 @@ create_docker_volume() {
 # --- Main execution ---
 echo "Setting up required Docker volumes..."
 create_docker_volume "model_cache"
-create_docker_volume "ollama_models" # As seen in your docker-compose.yaml
+create_docker_volume "ollama_models"
+create_docker_volume "stt_models"
 
 echo "Setup complete. You can now run 'make dev' or 'make prod' etc."

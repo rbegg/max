@@ -14,9 +14,11 @@
         expose:
           - "80"
         user: appuser
+        depends_on:
+          - assistant
 
       # -------------------------------------------------------------------------------------
-      # STT SERVICE
+      # STT SERVICE - Speach to text
       # -------------------------------------------------------------------------------------
       stt:
         build:
@@ -50,6 +52,17 @@
                   capabilities: [gpu]
 
       # -------------------------------------------------------------------------------------
+      # TTS SERVICE - Text To Speach
+      # -------------------------------------------------------------------------------------
+      tts:
+        image: rhasspy/wyoming-piper
+        command: --voice ${TTS_VOICE:-en_US-lessac-medium}
+        volumes:
+          - stt_models:/config
+        expose:
+          - 10200
+
+      # -------------------------------------------------------------------------------------
       # ASSISTANT SERVICE
       # -------------------------------------------------------------------------------------
       assistant:
@@ -65,6 +78,8 @@
         user: appuser
         depends_on:
           - stt
+          - tts
+          - ollama
 
 
       # -------------------------------------------------------------------------------------
@@ -76,6 +91,8 @@
           dockerfile: Dockerfile
         image: ollama-gpu
         restart: unless-stopped
+        environment:
+          - OLLAMA_KEEP_ALIVE=-1
         deploy:
           resources:
             reservations:
@@ -112,5 +129,7 @@
       model_cache:
         external: true
       ollama_models:
+        external: true
+      stt_models:
         external: true
         # ...
