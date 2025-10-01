@@ -14,6 +14,8 @@
         expose:
           - "80"
         user: appuser
+        depends_on:
+          - assistant
 
       # -------------------------------------------------------------------------------------
       # STT SERVICE - Speach to text
@@ -76,6 +78,8 @@
         user: appuser
         depends_on:
           - stt
+          - tts
+          - ollama
 
 
       # -------------------------------------------------------------------------------------
@@ -87,6 +91,8 @@
           dockerfile: Dockerfile
         image: ollama-gpu
         restart: unless-stopped
+        environment:
+          - OLLAMA_KEEP_ALIVE=-1
         deploy:
           resources:
             reservations:

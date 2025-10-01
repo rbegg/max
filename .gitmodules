@@ -4,3 +4,9 @@
 [submodule "services/max-assistant"]
 	path = services/max-assistant
 	url = git@github.com:rbegg/max-assistant.git
+[submodule "services/services/max-tts"]
+	path = services/services/max-tts
+	url = git@github.com:rbegg/max-tts
+[submodule "services/max-tts"]
+	path = services/max-tts
+	url = git@github.com:rbegg/max-tts
