@@ -27,6 +27,16 @@ async function startRecording() {
             stopRecording();
         });
 
+                // Send a test JSON message upon connection
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+            const configMessage = {
+                type: 'config',
+                username: elements.usernameInput.value
+            };
+            websocket.send(JSON.stringify(configMessage));
+            console.log('Sent config JSON message:', configMessage);
+        }
+
         const positiveSpeechThreshold = parseFloat(elements.thresholdInput.value);
         const pauseDurationMs = parseInt(elements.pauseDurationInput.value);
         const redemptionFrames = Math.round(pauseDurationMs / 32);

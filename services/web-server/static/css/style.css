@@ -98,6 +98,21 @@ button:disabled {
 #vad-indicator.speaking {
     background-color: #34a853;
 }
+#user-settings {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+#user-settings label {
+    font-weight: 500;
+}
+#user-settings input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 #vad-settings {
     display: flex;
     gap: 2rem;

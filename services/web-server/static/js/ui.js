@@ -13,6 +13,7 @@ export const elements = {
     statusDiv: document.getElementById('status'),
     vadIndicator: document.getElementById('vad-indicator'),
     transcriptionDiv: document.getElementById('transcription'),
+    usernameInput: document.getElementById('username'),
     thresholdInput: document.getElementById('threshold'),
     thresholdValueSpan: document.getElementById('threshold-value'),
     pauseDurationInput: document.getElementById('pause-duration'),
@@ -75,6 +76,7 @@ export function updateMuteButton(isMuted) {
 export function setRecordingState(isRecording) {
     elements.startButton.disabled = isRecording;
     elements.stopButton.disabled = !isRecording;
+    elements.usernameInput.disabled = isRecording;
     elements.thresholdInput.disabled = isRecording;
     elements.pauseDurationInput.disabled = isRecording;
     if (isRecording) {
