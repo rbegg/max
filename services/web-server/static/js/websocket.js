@@ -1,21 +1,30 @@
+
+/**
+ * @fileoverview Manages the WebSocket connection, including sending and receiving messages.
+ *               It handles text transcription data and binary audio data for playback.
+ * @author Robert Begg
+ * @license MIT
+ */
+
 import { updateStatus, updateTranscription } from './ui.js';
+import { playAudio } from './audio.js';
 
 let websocket;
 
 function handleWebSocketMessage(event) {
     // Check if the received data is a Blob (binary audio)
     if (event.data instanceof Blob) {
-        // Create a URL for the Blob and play the audio
-        const audioUrl = URL.createObjectURL(event.data);
-        const audio = new Audio(audioUrl);
-        audio.play();
-        console.log("Played audio response.");
+        // Convert Blob to ArrayBuffer for Web Audio API
+        event.data.arrayBuffer().then(arrayBuffer => {
+            playAudio(arrayBuffer);
+            console.log("Played audio response via Web Audio API.");
+        });
     } else {
         // Otherwise, assume it's a text message, potentially JSON
         console.log("Received message:", event.data);
         try {
             const messageData = JSON.parse(event.data);
-            
+
             // Now you can access properties from your JSON object
             const messageText = messageData.data;
 

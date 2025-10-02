@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Manages Voice Activity Detection (VAD) using @ricky0123/vad-web.
+ *               It captures microphone audio and sends it to the server upon speech detection.
+ * @author Robert Begg
+ * @license MIT
+ */
+
 import { setVADSpeaking } from './ui.js';
 
 let micVad;

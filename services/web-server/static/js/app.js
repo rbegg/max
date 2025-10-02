@@ -1,6 +1,15 @@
-import { initializeUI, elements, updateStatus, setRecordingState } from './ui.js';
+/**
+ * @fileoverview Main application logic for the real-time speech transcription client.
+ *               Initializes the UI, handles recording state, and orchestrates the
+ *               VAD, WebSocket, and Audio modules.
+ * @author Robert Begg
+ * @license MIT
+ */
+
+import { initializeUI, elements, updateStatus, setRecordingState, updateMuteButton } from './ui.js';
 import { connectWebSocket, getWebSocket } from './websocket.js';
 import { createMicVAD, pauseMicVad } from './vad.js';
+import { toggleMute } from './audio.js';
 
 let isRecording = false;
 
@@ -58,7 +67,13 @@ function stopRecording() {
     updateStatus('Recording stopped. Press Start to begin again.');
 }
 
+function handleMuteClick() {
+    const isMuted = toggleMute();
+    updateMuteButton(isMuted);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    initializeUI(startRecording, stopRecording);
+    initializeUI(startRecording, stopRecording, handleMuteClick);
     setRecordingState(false); // Initial state
+    updateMuteButton(true); // Set initial mute state on UI
 });

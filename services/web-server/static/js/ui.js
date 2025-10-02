@@ -1,18 +1,28 @@
+/**
+ * @fileoverview Manages all UI element interactions and updates for the application.
+ *               This includes handling button clicks, updating status messages,
+ *               and managing the visual state of indicators.
+ * @author Robert Begg
+ * @license MIT
+ */
+
 export const elements = {
     startButton: document.getElementById('startButton'),
     stopButton: document.getElementById('stopButton'),
+    muteButton: document.getElementById('muteButton'),
     statusDiv: document.getElementById('status'),
-    transcriptionDiv: document.getElementById('transcription'),
     vadIndicator: document.getElementById('vad-indicator'),
+    transcriptionDiv: document.getElementById('transcription'),
     thresholdInput: document.getElementById('threshold'),
     thresholdValueSpan: document.getElementById('threshold-value'),
     pauseDurationInput: document.getElementById('pause-duration'),
     durationValueSpan: document.getElementById('duration-value'),
 };
 
-export function initializeUI(startCb, stopCb) {
+export function initializeUI(startCb, stopCb, muteCb) {
     elements.startButton.addEventListener('click', startCb);
     elements.stopButton.addEventListener('click', stopCb);
+    elements.muteButton.addEventListener('click', muteCb);
 
     elements.thresholdInput.addEventListener('input', () => {
         elements.thresholdValueSpan.textContent = parseFloat(elements.thresholdInput.value).toFixed(2);
@@ -35,6 +45,12 @@ export function updateTranscription(text, source) {
     p.textContent = prefix + text;
 
     elements.transcriptionDiv.prepend(p);
+}
+
+export function updateMuteButton(isMuted) {
+    elements.muteButton.textContent = isMuted ? 'Unmute' : 'Mute';
+    elements.muteButton.classList.toggle('muted', isMuted);
+    elements.muteButton.classList.toggle('unmuted', !isMuted);
 }
 
 export function setRecordingState(isRecording) {
