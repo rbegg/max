@@ -1,22 +1,28 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    /* Remove flex properties that were centering the container */
     height: 100vh;
     margin: 0;
     background-color: #f0f2f5;
     color: #333;
 }
 #container {
-    width: 90%;
-    max-width: 800px;
+    /* Make the container a full-height flex column */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box; /* Ensures padding is included in the height */
+
+    /* Adjust properties for a full-page look */
+    width: 100%;
     background-color: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem 2rem 2rem; /* Add some padding around the content */
     text-align: center;
+
+    /* Remove card-like appearance */
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 h1 {
     color: #1a73e8;
@@ -62,11 +68,16 @@ button:disabled {
     margin-bottom: 1rem;
 }
 #transcription {
-    height: 300px;
+    /* Make the transcription area grow to fill available space */
+    flex-grow: 1;
+    min-height: 0; /* Prevents flexbox overflow issues */
+    
+    /* Keep existing styles */
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
     margin-top: 10px;
+    text-align: left; /* Align text inside the box to the left */
 }
 .user-message {
     font-weight: bold;
@@ -111,4 +122,59 @@ button:disabled {
     font-family: monospace;
     min-width: 60px;
     text-align: left;
+}
+
+.settings-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 32px;
+    cursor: pointer;
+    color: #333;
+    font-weight: bold;
+}
+
+.settings-icon:hover {
+    color: #007bff;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+/* The Close Button */
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }

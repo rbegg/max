@@ -7,11 +7,27 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <div id="settings-icon" class="settings-icon" title="Settings">&#9881;</div>
+
     <div id="container">
         <h1>Real-time Speech Transcription</h1>
         <div id="status">Press Start to begin</div>
         <div id="vad-indicator" title="Voice Activity Indicator"></div>
 
+        <div id="controls">
+            <button id="startButton">Start Recording</button>
+            <button id="stopButton" disabled>Stop Recording</button>
+            <button id="muteButton" class="unmuted">Mute</button>
+        </div>
+        <div id="transcription">
+        </div>
+    </div>
+
+    <!-- The Settings Modal -->
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" title="Close">&times;</span>
+        <h2>Settings</h2>
         <div id="vad-settings">
             <div>
                 <label for="threshold">Speech Threshold:</label>
@@ -24,14 +40,7 @@
                 <span id="duration-value">480 ms</span>
             </div>
         </div>
-
-        <div id="controls">
-            <button id="startButton">Start Talking to Max</button>
-            <button id="stopButton" disabled>Stop</button>
-            <button id="muteButton" class="unmuted">Mute</button>
-        </div>
-        <div id="transcription">
-        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>

@@ -17,6 +17,9 @@ export const elements = {
     thresholdValueSpan: document.getElementById('threshold-value'),
     pauseDurationInput: document.getElementById('pause-duration'),
     durationValueSpan: document.getElementById('duration-value'),
+    settingsIcon: document.getElementById('settings-icon'),
+    settingsModal: document.getElementById('settingsModal'),
+    closeSettingsButton: document.querySelector('.close-button'),
 };
 
 export function initializeUI(startCb, stopCb, muteCb) {
@@ -30,6 +33,22 @@ export function initializeUI(startCb, stopCb, muteCb) {
 
     elements.pauseDurationInput.addEventListener('input', () => {
         elements.durationValueSpan.textContent = `${elements.pauseDurationInput.value} ms`;
+    });
+
+    // Settings Modal Logic
+    elements.settingsIcon.addEventListener('click', () => {
+        elements.settingsModal.style.display = 'block';
+    });
+
+    elements.closeSettingsButton.addEventListener('click', () => {
+        elements.settingsModal.style.display = 'none';
+    });
+
+    // Hide modal if user clicks outside of the modal content
+    window.addEventListener('click', (event) => {
+        if (event.target == elements.settingsModal) {
+            elements.settingsModal.style.display = 'none';
+        }
     });
 }
 
