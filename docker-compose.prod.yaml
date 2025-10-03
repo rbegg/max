@@ -9,6 +9,7 @@ services:
     build:
       target: prod
       # Context & Dockerfile is set to services/web-server in docker-compose.yaml
+    command: ["python", "-m", "uvicorn", "src.main:app","--reload", "--log-level", "${WEB_LOG_LEVEL:-warning}"]
 
   # -------------------------------------------------------------------------------------
   # STT SERVICE
@@ -21,7 +22,7 @@ services:
       dockerfile: Dockerfile
     # ports are not exposed
     restart: unless-stopped
-    #command: ["sleep", "infinity"]
+    command: ["python", "-m", "uvicorn", "src.app:app","--reload","--log-level", "${STT_LOG_LEVEL:-warning}"]
 
     # -------------------------------------------------------------------------------------
     # ASSISTANT SERVICE
@@ -30,6 +31,12 @@ services:
     image: assistant-prod
     build:
       target: prod
+    command: [
+      "python", "-m", "uvicorn", "src.main:app",
+      "--reload",
+      "--log-config", "src/log_config.json",
+      "--log-level", "${ASSISTANT_LOG_LEVEL:-warning}"
+    ]
 
   # -------------------------------------------------------------------------------------
   # ollama SERVICE

@@ -75,6 +75,8 @@
         environment:
           - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
           - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3}
+          - TTS_VOICE=${TTS_VOICE:-en_US-lessac-medium}
+          - LOG_LEVEL=${ASSISTANT_LOG_LEVEL:-INFO}
         user: appuser
         depends_on:
           - stt
@@ -96,6 +98,7 @@
         restart: unless-stopped
         environment:
           - OLLAMA_KEEP_ALIVE=-1
+          - DEBUG=${OLLAMA_DEBUG:-0}
         deploy:
           resources:
             reservations:

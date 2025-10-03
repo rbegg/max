@@ -72,7 +72,7 @@ ENV LOG_LEVEL="${WEB_LOG_LEVEL:-info}" \
     UVICORN_HOST="0.0.0.0"
 
 # Set the command to run the FastAPI application with Uvicorn
-CMD ["python", "-m", "uvicorn", "src.main:app"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--log-level", "${WEB_LOG_LEVEL:-info}"]
 
 
 # ---- Development Stage ----

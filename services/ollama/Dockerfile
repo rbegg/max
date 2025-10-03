@@ -4,8 +4,9 @@ ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
 FROM ${BASE_IMAGE}
 
 # Set environment variables for non-root user and new models path
-ENV OLLAMA_HOST=0.0.0.0
-ENV OLLAMA_MODELS=/home/ollama/.ollama
+ENV OLLAMA_HOST=0.0.0.0 \
+    OLLAMA_MODELS=/home/ollama/.ollama \
+    DEBUG=${OLLAMA_DEBUG:-0}
 
 # Install dependencies needed for the Ollama install script
 RUN apt-get update && apt-get install -y curl
