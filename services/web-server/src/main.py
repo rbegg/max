@@ -17,6 +17,15 @@ favicon_path = static_dir / "images/favicon.ico"
 # Mount the `static` directory at the `/static` URL path
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+
+@app.get("/health")
+def health_check():
+    """
+    Checks if the application is healthy.
+    """
+    return {"status": "healthy"}
+
+
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse(favicon_path)
