@@ -1,7 +1,19 @@
 # Makefile for managing Docker Compose environments
 
+# Define the version
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_HASH   := $(shell git rev-parse --short HEAD)
+export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
+
+
+
 DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
 PROD_COMPOSE = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
+
+ifdef LOG
+	DEV_COMPOSE += -f docker-compose.logging.yaml
+	PROD_COMPOSE += -f docker-compose.logging.yaml
+endif
 
 # --- Development Commands ---
 

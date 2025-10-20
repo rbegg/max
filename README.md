@@ -48,6 +48,7 @@ Before you begin, ensure you have the following installed:
 
 * **Docker Engine**: [Installation Guide](https://docs.docker.com/engine/install/)
 * **Docker Compose**: [Installation Guide](https://docs.docker.com/compose/install/)
+* **Docker Plugin**: `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
 * **NVIDIA Container Toolkit**: Required for GPU
   support. [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 * **make**: A build automation tool, typically pre-installed on Linux and macOS.
@@ -87,7 +88,7 @@ Before you begin, ensure you have the following installed:
    This script will generate SLL Certificates for development and test usage, execute from the `max/proxy/` directory.
    ```bash
    cd proxy
-   bash scripts/setup.sh
+   sudo bash scripts/setup.sh
    cd ..
    ```
    
@@ -126,6 +127,13 @@ To switch the `stt` service to run on CPU:
 
 ## Running the Application
 
+### Optional Logging Services
+
+If the env variable LOG is set, Grafana and Loki will be started to provide logging services.
+```bash
+    export LOG=1
+```
+
 ### Development Mode
 
 To start all services in development mode with hot-reloading enabled for the custom services:
@@ -163,7 +171,7 @@ To stop and remove the production containers:
 make prod-down
 ```
 
-To brinf the services down and clear the build caches:
+To bring the services down and clear the build caches:
 ```bash
 make clean
 ```

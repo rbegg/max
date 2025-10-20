@@ -1,0 +1,73 @@
+
+# 1. Define a YAML "extension field" (starts with x-) to hold the anchor.
+# This template contains the logging config all services will share.
+x-loki-logging: &loki-config
+  logging:
+    driver: loki
+    options:
+      loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
+      loki-batch-size: "400"
+      mode: "non-blocking"
+      loki-external-labels: "version=${APP_VERSION:-latest}"
+  depends_on:
+    - loki
+
+
+services:
+  # -------------------------------------------------------------------------------------
+  # web-server SERVICE
+  # -------------------------------------------------------------------------------------
+  web-server:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # -------------------------------------------------------------------------------------
+  # stt SERVICE
+  # -------------------------------------------------------------------------------------
+  stt:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # -------------------------------------------------------------------------------------
+  # TTS SERVICE - Text To Speach
+  # -------------------------------------------------------------------------------------
+  tts:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # -------------------------------------------------------------------------------------
+  # ASSISTANT SERVICE
+  # -------------------------------------------------------------------------------------
+  assistant:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # -------------------------------------------------------------------------------------
+  # ollama SERVICE
+  # -------------------------------------------------------------------------------------
+  ollama:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # -------------------------------------------------------------------------------------
+  # proxy SERVICE
+  # -------------------------------------------------------------------------------------
+  proxy:
+    <<: *loki-config  # This merges in the logging: and depends_on: keys
+
+  # 4. The logging services are defined as normal
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    depends_on:
+      - loki
+
+volumes:
+  loki-data:
