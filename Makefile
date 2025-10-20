@@ -10,12 +10,22 @@ export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
 DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
 PROD_COMPOSE = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
 
+# Always include logging for down cmds
+DEV_COMPOSE_LOG = $(DEV_COMPOSE) -f docker-compose.logging.yaml
+PROD_COMPOSE_LOG = $(PROD_COMPOSE) -f docker-compose.logging.yaml
+
+# export LOG=1 to enable logging services
 ifdef LOG
 	DEV_COMPOSE += -f docker-compose.logging.yaml
 	PROD_COMPOSE += -f docker-compose.logging.yaml
 endif
 
 # --- Development Commands ---
+echo:
+	@echo "APP_VERSION = " $(APP_VERSION)
+	@echo "DEV CMD     = " $(DEV_COMPOSE)
+	@echo "PROD CMD    = " $(PROD_COMPOSE)
+
 
 ## Build and start the development containers
 dev:
@@ -23,19 +33,7 @@ dev:
 
 ## Stop the development containers
 dev-down:
-	$(DEV_COMPOSE) down
-
-## Get an interactive shell inside the running dev container
-dev-stt-shell:
-	$(DEV_COMPOSE) exec max-dev-max-stt bash
-
-	## Get an interactive shell inside the running dev container
-dev-max-shell:
-	$(DEV_COMPOSE) exec max ash
-
-## Get an interactive shell inside the running dev container
-dev-ollama-shell:
-	$(DEV_COMPOSE) exec ollama bash
+	$(DEV_COMPOSE_LOG) down
 
 # --- Production Commands ---
 
@@ -45,13 +43,18 @@ prod:
 
 ## Stop the production containers
 prod-down:
-	$(PROD_COMPOSE) down
+	$(PROD_COMPOSE_LOG) down
 
-prod-logs:
-	docker logs -f stt-prod
+logs:
+	docker logs -f
 
-prod-shell:
-	docker exec -it stt-prod bash
+logs-ui:
+	@echo "---"
+	@echo "🔍 Starting Grafana and Loki services..."
+	@echo "Access Grafana at: http://localhost:3000"
+	@echo "---"
+	$(PROD_COMPOSE) up -d loki grafana
+
 # --- Utility Commands ---
 
 ## Stop all containers and remove volumes (cleans the cache)
