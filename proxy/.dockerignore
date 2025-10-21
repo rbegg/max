@@ -1,0 +1,16 @@
+# This file tells Docker which files and directories to exclude
+# from the build context that gets sent to the Docker daemon.
+# This speeds up builds and avoids potential issues.
+
+# Ignore the node_modules directory, as dependencies will be installed inside the container.
+node_modules
+
+# Ignore the locally generated build output.
+dist
+
+# Ignore npm debug logs
+npm-debug.log
+
+# Ignore the Dockerfile itself
+Dockerfile
+.dockerignore

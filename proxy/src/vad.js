@@ -1,6 +1,6 @@
 /**
  * @fileoverview Manages Voice Activity Detection (VAD) using @ricky0123/vad-web.
- *               It captures microphone audio and sends it to the server upon speech detection.
+ * It captures microphone audio and sends it to the server upon speech detection.
  * @author Robert Begg
  * @license MIT
  */
@@ -10,7 +10,8 @@ import { setVADSpeaking } from './ui.js';
 let micVad;
 
 export async function createMicVAD(options) {
-    const myVad = await vad.MicVAD.new({
+    // Use the imported MicVAD class directly instead of the global 'vad' object
+    const myVad = await window.vad.MicVAD.new({
         ...options,
         onSpeechStart: () => {
             console.log("Speech started");
@@ -38,3 +39,4 @@ export function pauseMicVad() {
         micVad = null;
     }
 }
+

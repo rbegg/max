@@ -4,25 +4,25 @@
       # -------------------------------------------------------------------------------------
       # web-server SERVICE
       # -------------------------------------------------------------------------------------
-      web-server:
-        build:
-          context: ./services/web-server
-          dockerfile: Dockerfile
-          # Target is set in override files
-          args:
-            - PYTHON_VERSION=3.11
-        expose:
-          - "80"
-        user: appuser
-        healthcheck:
-          # This command now calls your new API endpoint
-          test: [ "CMD", "curl", "-f", "http://localhost:80/health" ]
-          interval: 60s
-          timeout: 15s
-          retries: 3
-          start_period: 60s
-        depends_on:
-          - assistant
+#      web-server:
+#        build:
+#          context: ./services/web-server
+#          dockerfile: Dockerfile
+#          # Target is set in override files
+#          args:
+#            - PYTHON_VERSION=3.11
+#        expose:
+#          - "80"
+#        user: appuser
+#        healthcheck:
+#          # This command now calls your new API endpoint
+#          test: [ "CMD", "curl", "-f", "http://localhost:80/health" ]
+#          interval: 60s
+#          timeout: 15s
+#          retries: 3
+#          start_period: 60s
+#        depends_on:
+#          - assistant
 
       # -------------------------------------------------------------------------------------
       # STT SERVICE - Speach to text
@@ -154,12 +154,13 @@
       # proxy SERVICE
       # -------------------------------------------------------------------------------------
       proxy:
-        image: nginx:latest
+        build:
+          context: ./proxy
+          dockerfile: Dockerfile
         # Port mapping and volumes will be defined in dev/prod override files
         depends_on:
           - stt
           - assistant
-          - web-server
         environment:
           # Define the variables used in the proxy/nginx/*.conf.template files to gen nginx config
           # values read from the .env file will override the defaults here

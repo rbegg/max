@@ -1,7 +1,7 @@
 /**
  * @fileoverview Manages all UI element interactions and updates for the application.
- *               This includes handling button clicks, updating status messages,
- *               and managing the visual state of indicators.
+ * This includes handling button clicks, updating status messages,
+ * and managing the visual state of indicators.
  * @author Robert Begg
  * @license MIT
  */
@@ -95,3 +95,4 @@ export function setVADSpeaking(isSpeaking) {
         elements.vadIndicator.classList.remove("speaking");
     }
 }
+

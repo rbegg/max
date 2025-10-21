@@ -1,7 +1,6 @@
-
 /**
  * @fileoverview Manages the WebSocket connection, including sending and receiving messages.
- *               It handles text transcription data and binary audio data for playback.
+ * It handles text transcription data and binary audio data for playback.
  * @author Robert Begg
  * @license MIT
  */
@@ -79,3 +78,4 @@ export function connectWebSocket(onCloseCallback) {
 export function getWebSocket() {
     return websocket;
 }
+

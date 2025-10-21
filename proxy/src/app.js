@@ -1,10 +1,35 @@
 /**
  * @fileoverview Main application logic for the real-time speech transcription client.
- *               Initializes the UI, handles recording state, and orchestrates the
- *               VAD, WebSocket, and Audio modules.
+ * Initializes the UI, handles recording state, and orchestrates the
+ * VAD, WebSocket, and Audio modules.
  * @author Robert Begg
  * @license MIT
  */
+// Import the icon files from the assets directory. Vite will process them and provide the correct final URLs.
+import faviconICO from './assets/images/favicon.ico';
+import faviconPNG16 from './assets/images/max-icon-16x16.png';
+import faviconPNG32 from './assets/images/max-icon-32x32.png';
+import faviconPNG144 from './assets/images/max-icon-144x144.png';
+import appleTouchIcon from './assets/images/max-icon-180x180.png';
+
+// Create and append the link tags for the favicons to the document's head.
+// This is the standard way to handle assets in Vite to ensure proper cache-busting.
+const icons = [
+  { rel: 'icon', type: 'image/x-icon', href: faviconICO },
+  { rel: 'icon', type: 'image/png', sizes: '16x16', href: faviconPNG16 },
+  { rel: 'icon', type: 'image/png', sizes: '32x32', href: faviconPNG32 },
+  { rel: 'icon', type: 'image/png', sizes: '144x144', href: faviconPNG144 },
+  { rel: 'apple-touch-icon', sizes: '180x180', href: appleTouchIcon },
+];
+
+icons.forEach(iconInfo => {
+  const link = document.createElement('link');
+  link.rel = iconInfo.rel;
+  if (iconInfo.type) link.type = iconInfo.type;
+  if (iconInfo.sizes) link.sizes = iconInfo.sizes;
+  link.href = iconInfo.href;
+  document.head.appendChild(link);
+});
 
 import { initializeUI, elements, updateStatus, setRecordingState, updateMuteButton } from './ui.js';
 import { connectWebSocket, getWebSocket } from './websocket.js';
@@ -87,3 +112,4 @@ document.addEventListener('DOMContentLoaded', () => {
     setRecordingState(false); // Initial state
     updateMuteButton(true); // Set initial mute state on UI
 });
+

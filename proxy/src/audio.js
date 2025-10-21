@@ -1,7 +1,7 @@
 /**
  * @fileoverview Manages audio playback using the Web Audio API.
- *               This module handles creating an AudioContext, playing buffered audio,
- *               and managing the mute/unmute state.
+ * This module handles creating an AudioContext, playing buffered audio,
+ * and managing the mute/unmute state.
  * @author Robert Begg
  * @license MIT
  */
@@ -58,3 +58,4 @@ export function toggleMute() {
     }
     return isMuted;
 }
+
