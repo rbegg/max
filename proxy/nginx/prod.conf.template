@@ -2,9 +2,6 @@
 
     # Define the backend services. Using 127.0.0.1 is best if all services
     # are on the same machine. Use the service's internal IP if they are not.
-    upstream web_server {
-        server web-server;
-    }
     upstream assistant_service {
         server ${ASSISTANT_HOST};
     }
@@ -33,6 +30,15 @@
         ssl_certificate ${SSL_CERTIFICATE_PATH};
         ssl_certificate_key ${SSL_CERTIFICATE_KEY_PATH};
 
+        # Define the root directory for your static files.
+        # This must match the destination in your Dockerfile's COPY command.
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Add the required headers for SharedArrayBuffer (for VAD worklets)
+        add_header Cross-Origin-Opener-Policy "same-origin";
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+
         # --- Security Best Practices ---
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_prefer_server_ciphers off;
@@ -48,16 +54,12 @@
 
         # --- Location Routing ---
 
-        # Rule 1: Route standard HTTP traffic to the Web Server for the UI
+        # Serve all standard client requests
         location / {
-            proxy_pass http://web_server;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+            try_files $uri $uri/ /index.html;
         }
 
-        # Rule 2: Route the client's WebSocket (wss://) to the Assistant Service
+        # Route the client's WebSocket (wss://) to the Assistant Service
         location /ws {
             proxy_pass http://assistant_service;
             proxy_http_version 1.1;
