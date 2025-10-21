@@ -1,5 +1,5 @@
 
-# 1. Define a YAML "extension field" (starts with x-) to hold the anchor.
+# Define a YAML "extension field" (starts with x-) to hold the anchor.
 # This template contains the logging config all services will share.
 x-loki-logging: &loki-config
   logging:
@@ -24,33 +24,38 @@ services:
   # stt SERVICE
   # -------------------------------------------------------------------------------------
   stt:
-    <<: *loki-config  # This merges in the logging: and depends_on: keys
+    <<: *loki-config
 
   # -------------------------------------------------------------------------------------
   # TTS SERVICE - Text To Speach
   # -------------------------------------------------------------------------------------
   tts:
-    <<: *loki-config  # This merges in the logging: and depends_on: keys
+    <<: *loki-config
 
   # -------------------------------------------------------------------------------------
   # ASSISTANT SERVICE
   # -------------------------------------------------------------------------------------
   assistant:
-    <<: *loki-config  # This merges in the logging: and depends_on: keys
+    <<: *loki-config
 
   # -------------------------------------------------------------------------------------
   # ollama SERVICE
   # -------------------------------------------------------------------------------------
   ollama:
-    <<: *loki-config  # This merges in the logging: and depends_on: keys
+    <<: *loki-config
 
   # -------------------------------------------------------------------------------------
   # proxy SERVICE
   # -------------------------------------------------------------------------------------
   proxy:
-    <<: *loki-config  # This merges in the logging: and depends_on: keys
+    <<: *loki-config
 
-  # 4. The logging services are defined as normal
+  # -------------------------------------------------------------------------------------
+  # node4j Database SERVICE
+  # -------------------------------------------------------------------------------------
+  neo4j:
+    <<: *loki-config
+
   loki:
     image: grafana/loki:latest
     ports:

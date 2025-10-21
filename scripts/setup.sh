@@ -17,5 +17,6 @@ echo "Setting up required Docker volumes..."
 create_docker_volume "model_cache"
 create_docker_volume "ollama_models"
 create_docker_volume "stt_models"
+create_docker_volume "neo4j_data"
 
 echo "Setup complete. You can now run 'make dev' or 'make prod' etc."

@@ -100,6 +100,9 @@
           - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3}
           - TTS_VOICE=${TTS_VOICE:-en_US-lessac-medium}
           - LOG_LEVEL=${ASSISTANT_LOG_LEVEL:-INFO}
+          - NEO4J_URI=${NEO4J_URI:-bolt://neo4j:7687}
+          - NEO4J_USER=${NEO4J_USER}
+          - NEO4J_PASSWORD=${NEO4J_PASSWORD}
         user: appuser
         healthcheck:
           # This command now calls your new API endpoint
@@ -175,6 +178,27 @@
           retries: 3
           start_period: 60s
 
+      # -------------------------------------------------------------------------------------
+      # node4j Database SERVICE
+      # -------------------------------------------------------------------------------------
+      neo4j:
+        image: neo4j:latest
+        container_name: neo4j_db
+        expose:
+          - "7474" # Neo4j Browser
+          - "76877" # Bolt (database connection)
+        environment:
+          - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD} # Set username/password
+          - NEO4J_PLUGINS=["apoc"] # Optional: include useful plugins
+        volumes:
+          - neo4j_data:/data # Persist database data
+        healthcheck:
+          test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1" ]
+          interval: 5s
+          timeout: 10s
+          retries: 3
+          start_period: 10s
+
     volumes:
       model_cache:
         external: true
@@ -182,4 +206,5 @@
         external: true
       stt_models:
         external: true
-        # ...
+      neo4j_data:
+        external: true
