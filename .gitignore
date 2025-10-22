@@ -1,4 +1,5 @@
-proxy/certs
+proxy/certs/
+proxy/dist/
 .idea
 .venv
 .env
