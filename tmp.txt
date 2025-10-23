@@ -1,0 +1,96 @@
+2025-10-23 12:04:09,898 - INFO - Will watch for changes in these directories: ['/app']
+2025-10-23 12:04:09,899 - INFO - Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
+2025-10-23 12:04:09,899 - INFO - Started reloader process [1] using WatchFiles
+2025-10-23 12:04:11,300 - INFO - Ollama Base URL = http://ollama:11434 model = llama3.1:8b-instruct-q4_K_M
+2025-10-23 12:04:11,301 - INFO - Started server process [8]
+2025-10-23 12:04:11,301 - INFO - Waiting for application startup.
+2025-10-23 12:04:11,301 - INFO - Application startup...
+2025-10-23 12:04:11,301 - INFO - Initializing the reasoning engine...
+2025-10-23 12:04:11,301 - INFO - ==================================================
+2025-10-23 12:04:11,301 - INFO - 🚀 Initializing Ollama (Async)...
+2025-10-23 12:04:11,302 - INFO -    Model: llama3.1:8b-instruct-q4_K_M
+2025-10-23 12:04:11,302 - INFO -    Target: http://ollama:11434
+2025-10-23 12:04:11,302 - INFO - ==================================================
+2025-10-23 12:04:11,346 - INFO - 🔥 Sending async warm-up request to load 'llama3.1:8b-instruct-q4_K_M' into memory.
+2025-10-23 12:04:11,346 - INFO - Application startup complete.
+2025-10-23 12:04:14,430 - INFO - 127.0.0.1:57156 - "GET /health HTTP/1.1" 200
+2025-10-23 12:04:21,803 - INFO - 172.19.0.7:34216 - "WebSocket /ws" [accepted]
+2025-10-23 12:04:21,803 - INFO - Client connected.
+2025-10-23 12:04:21,803 - INFO - Waiting for reasoning engine to be ready...
+2025-10-23 12:04:21,803 - INFO - connection open
+2025-10-23 12:04:40,007 - INFO - HTTP Request: POST http://ollama:11434/api/chat "HTTP/1.1 200 OK"
+2025-10-23 12:04:45,447 - INFO - 
+✅ Async warm-up complete! Model is ready.
+2025-10-23 12:04:45,447 - INFO -    Warm-up duration: 34.09 seconds.
+2025-10-23 12:04:45,447 - INFO - --------------------------------------------------
+2025-10-23 12:04:45,449 - INFO - Reasoning engine is ready.
+2025-10-23 12:04:45,449 - INFO - Handling new client connection.
+2025-10-23 12:04:45,449 - INFO - TEXT_HANDLER: Received text from client: {"type":"config","username":"Robert"}
+2025-10-23 12:04:45,452 - INFO - Connected to STT service at ws://stt/ws.
+2025-10-23 12:04:46,238 - INFO - Received message from STT: {"type": "transcription", "source": "user", "data": "Hello, Max."}
+2025-10-23 12:04:46,238 - INFO - Calling Reasoning engine with: Hello, Max.
+2025-10-23 12:04:46,240 - INFO - Reasoning engine received: Hello, Max.
+2025-10-23 12:04:46,240 - INFO - Current message count: 0
+2025-10-23 12:04:46,240 - INFO - Username: Robert
+2025-10-23 12:04:46,395 - INFO - HTTP Request: POST http://ollama:11434/api/chat "HTTP/1.1 200 OK"
+2025-10-23 12:04:46,987 - INFO - Reasoning engine produced: Good day Robert! How can I assist you today? You have a busy schedule ahead of you, and I'd be happy to help you stay on track. What's the first thing you need help with?
+2025-10-23 12:04:46,988 - INFO - Connection to tts established.
+2025-10-23 12:04:46,988 - INFO - Sent synthesize request with voice: en_US-hfc_female-medium text: 'Good day Robert! How can I assist you today? You have a busy schedule ahead of you, and I'd be happy to help you stay on track. What's the first thing you need help with?'
+2025-10-23 12:04:48,933 - INFO - Audio stream started with params: rate=22050, width={start_event.width}, channels={start_event.channels}
+2025-10-23 12:04:48,941 - INFO - Audio stream finished.
+2025-10-23 12:05:00,449 - INFO - Received message from STT: {"type": "transcription", "source": "user", "data": "tell you right now"}
+2025-10-23 12:05:00,449 - INFO - Calling Reasoning engine with: tell you right now
+2025-10-23 12:05:00,450 - INFO - Reasoning engine received: tell you right now
+2025-10-23 12:05:00,450 - INFO - Current message count: 2
+2025-10-23 12:05:00,450 - INFO - Username: Robert
+2025-10-23 12:05:00,539 - INFO - HTTP Request: POST http://ollama:11434/api/chat "HTTP/1.1 200 OK"
+2025-10-23 12:05:01,260 - INFO - Reasoning engine produced: You're already at 12:05 PM, Robert. Your Mid-day Medication is scheduled for 12 pm, but it looks like you've missed it. Would you like me to remind you about your Lunch appointment at 12:30 PM?
+2025-10-23 12:05:01,261 - INFO - Connection to tts established.
+2025-10-23 12:05:01,261 - INFO - Sent synthesize request with voice: en_US-hfc_female-medium text: 'You're already at 12:05 PM, Robert. Your Mid-day Medication is scheduled for 12 pm, but it looks like you've missed it. Would you like me to remind you about your Lunch appointment at 12:30 PM?'
+2025-10-23 12:05:01,511 - INFO - Audio stream started with params: rate=22050, width={start_event.width}, channels={start_event.channels}
+2025-10-23 12:05:01,521 - INFO - Audio stream finished.
+2025-10-23 12:05:03,795 - INFO - Received message from STT: {"type": "transcription", "source": "user", "data": "summer camp."}
+2025-10-23 12:05:03,795 - INFO - Calling Reasoning engine with: summer camp.
+2025-10-23 12:05:03,797 - INFO - Reasoning engine received: summer camp.
+2025-10-23 12:05:03,797 - INFO - Current message count: 4
+2025-10-23 12:05:03,797 - INFO - Username: Robert
+2025-10-23 12:05:03,893 - INFO - HTTP Request: POST http://ollama:11434/api/chat "HTTP/1.1 200 OK"
+2025-10-23 12:05:04,630 - INFO - Reasoning engine produced: Robert, I think there might be some confusion. It's October 23rd, and the weather is likely quite different from summer. You don't have any scheduled activities related to a summer camp today. Would you like me to review your schedule with you?
+2025-10-23 12:05:04,632 - INFO - Connection to tts established.
+2025-10-23 12:05:04,632 - INFO - Sent synthesize request with voice: en_US-hfc_female-medium text: 'Robert, I think there might be some confusion. It's October 23rd, and the weather is likely quite different from summer. You don't have any scheduled activities related to a summer camp today. Would you like me to review your schedule with you?'
+2025-10-23 12:05:04,899 - INFO - Audio stream started with params: rate=22050, width={start_event.width}, channels={start_event.channels}
+2025-10-23 12:05:04,905 - INFO - Audio stream finished.
+2025-10-23 12:05:13,877 - INFO - connection closed
+2025-10-23 12:05:13,877 - INFO - Client writer cancelled.
+2025-10-23 12:05:13,877 - INFO - Text input handler loop has stopped.
+2025-10-23 12:05:13,878 - INFO - Agent loop cancelled.
+2025-10-23 12:05:13,878 - INFO - Agent loop has stopped.
+2025-10-23 12:05:13,878 - INFO - Connection handler for a client finished.
+2025-10-23 12:05:13,878 - INFO - Client connection handler finished.
+2025-10-23 12:05:14,512 - INFO - 127.0.0.1:50832 - "GET /health HTTP/1.1" 200
+2025-10-23 12:06:14,578 - INFO - 127.0.0.1:42368 - "GET /health HTTP/1.1" 200
+2025-10-23 12:07:14,649 - INFO - 127.0.0.1:53358 - "GET /health HTTP/1.1" 200
+2025-10-23 12:08:14,712 - INFO - 127.0.0.1:43220 - "GET /health HTTP/1.1" 200
+2025-10-23 12:09:14,800 - INFO - 127.0.0.1:34820 - "GET /health HTTP/1.1" 200
+2025-10-23 12:10:14,872 - INFO - 127.0.0.1:43226 - "GET /health HTTP/1.1" 200
+2025-10-23 12:11:14,932 - INFO - 127.0.0.1:48418 - "GET /health HTTP/1.1" 200
+2025-10-23 12:12:14,994 - INFO - 127.0.0.1:46312 - "GET /health HTTP/1.1" 200
+2025-10-23 12:13:15,066 - INFO - 127.0.0.1:51978 - "GET /health HTTP/1.1" 200
+2025-10-23 12:14:15,132 - INFO - 127.0.0.1:35556 - "GET /health HTTP/1.1" 200
+2025-10-23 12:15:15,217 - INFO - 127.0.0.1:41428 - "GET /health HTTP/1.1" 200
+2025-10-23 12:16:15,276 - INFO - 127.0.0.1:52306 - "GET /health HTTP/1.1" 200
+2025-10-23 12:17:15,336 - INFO - 127.0.0.1:44144 - "GET /health HTTP/1.1" 200
+2025-10-23 12:18:15,379 - INFO - 127.0.0.1:35832 - "GET /health HTTP/1.1" 200
+2025-10-23 12:19:15,449 - INFO - 127.0.0.1:40538 - "GET /health HTTP/1.1" 200
+2025-10-23 12:20:16,342 - INFO - 127.0.0.1:42370 - "GET /health HTTP/1.1" 200
+2025-10-23 12:21:16,475 - INFO - 127.0.0.1:58176 - "GET /health HTTP/1.1" 200
+2025-10-23 12:22:16,546 - INFO - 127.0.0.1:39814 - "GET /health HTTP/1.1" 200
+2025-10-23 12:23:16,621 - INFO - 127.0.0.1:55852 - "GET /health HTTP/1.1" 200
+2025-10-23 12:24:16,693 - INFO - 127.0.0.1:38754 - "GET /health HTTP/1.1" 200
+2025-10-23 12:25:16,760 - INFO - 127.0.0.1:33214 - "GET /health HTTP/1.1" 200
+2025-10-23 12:26:16,838 - INFO - 127.0.0.1:58010 - "GET /health HTTP/1.1" 200
+2025-10-23 12:27:16,896 - INFO - 127.0.0.1:36982 - "GET /health HTTP/1.1" 200
+2025-10-23 12:28:16,968 - INFO - 127.0.0.1:37910 - "GET /health HTTP/1.1" 200
+2025-10-23 12:29:17,028 - INFO - 127.0.0.1:43910 - "GET /health HTTP/1.1" 200
+2025-10-23 12:30:17,095 - INFO - 127.0.0.1:40562 - "GET /health HTTP/1.1" 200
+2025-10-23 12:31:17,167 - INFO - 127.0.0.1:39814 - "GET /health HTTP/1.1" 200

@@ -8,9 +8,10 @@
 
 let audioContext;
 let gainNode;
-let isMuted = true;
+let prevSource = null;
+let isMuted = false;
 
-function initAudio() {
+export function initAudio() {
     if (audioContext) {
         return;
     }
@@ -18,8 +19,8 @@ function initAudio() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         gainNode = audioContext.createGain();
         gainNode.connect(audioContext.destination);
-        // Start muted
-        gainNode.gain.value = 0;
+        // Start unmuted
+        gainNode.gain.value = 1;
     } catch (e) {
         console.error("Web Audio API is not supported in this browser", e);
     }
@@ -34,9 +35,13 @@ export async function playAudio(arrayBuffer) {
     try {
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         const source = audioContext.createBufferSource();
+        if (prevSource) {
+            prevSource.stop();
+        }
         source.buffer = audioBuffer;
         source.connect(gainNode);
         source.start(0);
+        prevSource = source;
     } catch (error) {
         console.error("Error decoding or playing audio:", error);
     }

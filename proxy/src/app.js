@@ -11,6 +11,7 @@ import faviconPNG16 from './assets/images/max-icon-16x16.png';
 import faviconPNG32 from './assets/images/max-icon-32x32.png';
 import faviconPNG144 from './assets/images/max-icon-144x144.png';
 import appleTouchIcon from './assets/images/max-icon-180x180.png';
+import { initAudio} from './audio.js';
 
 // Create and append the link tags for the favicons to the document's head.
 // This is the standard way to handle assets in Vite to ensure proper cache-busting.
@@ -42,6 +43,7 @@ async function startRecording() {
     if (isRecording) return;
     isRecording = true;
     setRecordingState(true);
+    initAudio();
 
     try {
         const websocket = await connectWebSocket(() => {
@@ -110,6 +112,6 @@ function handleMuteClick() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeUI(startRecording, stopRecording, handleMuteClick);
     setRecordingState(false); // Initial state
-    updateMuteButton(true); // Set initial mute state on UI
+    updateMuteButton(false); // Set initial mute state on UI
 });
 
