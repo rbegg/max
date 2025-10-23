@@ -1,4 +1,10 @@
+    include /etc/nginx/mime.types;
 
+    # Define additional MIME types or override existing ones
+    types {
+        # Ensure .mjs files are served with the correct JavaScript MIME type
+        application/javascript mjs;
+    }
 
     # Define the backend services. Using 127.0.0.1 is best if all services
     # are on the same machine. Use the service's internal IP if they are not.

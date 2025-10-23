@@ -5,14 +5,20 @@
  * @license MIT
  */
 
+import { MicVAD } from "@ricky0123/vad-web";
 import { setVADSpeaking } from './ui.js';
 
 let micVad;
 
 export async function createMicVAD(options) {
-    // Use the imported MicVAD class directly instead of the global 'vad' object
-    const myVad = await window.vad.MicVAD.new({
+    // Get the base URL of the server (e.g., "http://localhost:8080")
+    const baseURL = new URL(window.location.origin);
+    console.log( '"Base URL: ', baseURL.origin + "/");
+
+    const myVad = await MicVAD.new({
         ...options,
+        baseAssetPath: baseURL.origin + "/",
+        onnxWASMBasePath: baseURL.origin + "/",
         onSpeechStart: () => {
             console.log("Speech started");
             setVADSpeaking(true);

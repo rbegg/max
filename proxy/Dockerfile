@@ -7,6 +7,8 @@ WORKDIR /proxy
 # Copy package.json and package-lock.json first for layer caching.
 COPY package*.json ./
 
+COPY scripts ./scripts
+
 # Install all dependencies.
 RUN npm install
 
@@ -23,7 +25,7 @@ EXPOSE 5173
 
 # The command to start the Vite development server.
 # The '--host' flag is crucial to expose the server outside the container.
-CMD [ "npm", "run", "dev", "--", "--host" ]
+CMD [ "npm", "run", "dev", "--", "--host", "--force"]
 
 
 # --- TARGET: Production (default) ---
