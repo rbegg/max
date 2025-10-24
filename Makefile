@@ -31,6 +31,9 @@ echo:
 dev:
 	$(DEV_COMPOSE) up --build
 
+ollama:
+	$(DEV_COMPOSE) up ollama --build
+
 ## Stop the development containers
 dev-down:
 	$(DEV_COMPOSE_LOG) down
