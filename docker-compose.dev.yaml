@@ -56,9 +56,11 @@ services:
       - ./services/max-assistant:/app
     command: [
       "python", "-m", "uvicorn", "src.main:app",
-      "--reload",
+      "--reload-dir", "/app/src",
+      "--reload-exclude", "*__pycache__*",
       "--log-config", "src/log_config.json",
       "--log-level", "${ASSISTANT_LOG_LEVEL:-info}"
+
     ]
 
   # -------------------------------------------------------------------------------------
@@ -87,6 +89,15 @@ services:
       - ./proxy:/proxy
       - /proxy/node_modules
 
+  # -------------------------------------------------------------------------------------
+  # node4j Database SERVICE
+  # -------------------------------------------------------------------------------------
+  neo4j:
+    ports:
+      - "7474:7474" # Neo4j Browser
+      - "7687:7687" # Bolt (database connection)
+
+        
   # -------------------------------------------------------------------------------------
   # VOLUMES
   # -------------------------------------------------------------------------------------

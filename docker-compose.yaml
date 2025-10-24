@@ -186,7 +186,7 @@
         image: neo4j:latest
         expose:
           - "7474" # Neo4j Browser
-          - "76877" # Bolt (database connection)
+          - "7687" # Bolt (database connection)
         environment:
           - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD} # Set username/password
           - NEO4J_PLUGINS=["apoc"] # Optional: include useful plugins

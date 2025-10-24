@@ -6,3 +6,4 @@ proxy/dist/
 .env.dev
 *.env.local
 node_modules/
+*:Zone.Identifier

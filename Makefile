@@ -31,8 +31,8 @@ echo:
 dev:
 	$(DEV_COMPOSE) up --build
 
-ollama:
-	$(DEV_COMPOSE) up ollama --build
+a-test:
+	$(DEV_COMPOSE) up ollama neo4j --build
 
 ## Stop the development containers
 dev-down:
