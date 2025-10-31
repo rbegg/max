@@ -190,6 +190,7 @@
         environment:
           - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD} # Set username/password
           - NEO4J_PLUGINS=["apoc"] # Optional: include useful plugins
+          - NEO4J_db_query_default__language=CYPHER_25
         volumes:
           - neo4j_data:/data # Persist database data
         healthcheck:
