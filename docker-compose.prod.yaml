@@ -41,9 +41,8 @@ services:
     build:
       target: prod
     command: [
-      "python", "-m", "uvicorn", "src.main:app",
-      "--reload",
-      "--log-config", "src/log_config.json",
+      "python", "-m", "uvicorn", "max_assistant.main:app",
+      "--log-config", "log_config.json",
       "--log-level", "${ASSISTANT_LOG_LEVEL:-warning}"
     ]
 
