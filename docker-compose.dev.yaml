@@ -54,15 +54,9 @@ services:
     volumes:
       # Bind-Mount local directories into the container for live code changes.
       - ./services/max-assistant:/app
-    command:  |
-      sh -c "pip install -e . && \
-             python -m uvicorn max_assistant.main:app \
-             --reload-dir /app/src \
-             --reload-exclude '*__pycache__*' \
-             --log-config src/log_config.json \
-             --log-level ${ASSISTANT_LOG_LEVEL:-info} \
-             --host 0.0.0.0 \
-             --port 80"
+    command:  >
+      sh -c "pip install -e . && 
+             python -m uvicorn max_assistant.main:app --reload-dir /app/src --reload-exclude '*__pycache__*' --log-config log_config.json --log-level ${ASSISTANT_LOG_LEVEL:-info} --host 0.0.0.0  --port 80"
 
   # -------------------------------------------------------------------------------------
   # ollama SERVICE
