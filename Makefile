@@ -8,7 +8,7 @@ export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
 
 
 DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
-PROD_COMPOSE = docker compose -f docker-compose.yaml -f docker-compose.prod.yaml
+PROD_COMPOSE = docker compose --env-file .env -f docker-compose.yaml -f docker-compose.prod.yaml
 
 # Always include logging for down cmds
 DEV_COMPOSE_LOG = $(DEV_COMPOSE) -f docker-compose.logging.yaml
