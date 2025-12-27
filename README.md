@@ -92,7 +92,19 @@ Before you begin, ensure you have the following installed:
    sudo bash scripts/setup.sh
    cd ..
    ```
-   
+6. **Run the max-assistant setup script**:
+   This script will load the sample data from max/services/max-assistant/csv_data
+   and authenticate the gmail client.
+   The scripts are dependent on ```env.local``` located in the max-assistant directory.
+ 
+   **TODO** cleanup use of .env files.
+
+   To run the script:
+   ```bash
+   cd services/max-assistant
+   bash scripts/setup.sh
+   cd ..
+   ```   
 
 ## Configuration
 
