@@ -80,9 +80,10 @@ Before you begin, ensure you have the following installed:
 
 4. **Run the Setup Script**:
    This script creates the necessary external Docker volumes (`model_cache` and `ollama_models`) for persisting model 
-   data.
+   data.  The server-name (hostname of the the server running max) must be passed as a parameter or be defined as an 
+   environment variable.
    ```bash
-   bash scripts/setup.sh
+   bash scripts/setup.sh <server-name>
    ```
 5. **Run the proxy setup script**:
    This script will generate SLL Certificates for development and test usage, execute from the `max/proxy/` directory.
@@ -177,8 +178,13 @@ make clean
 ```
 
 ### Client (Browser) access
-Once the application is running, you can access the web interface at either localhothe host and port you 
-configured 
+Once the application is running, you can access the web interface at either the server-name or localhost and port you 
+configured.
+
+For example if PROXY_HTTPS_PORT=9443:
+```
+https://127.0.0.1:9443
+```
 
 
 ## NVIDA GPU Support

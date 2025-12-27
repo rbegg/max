@@ -1,5 +1,11 @@
 #!/bin/bash
 
+SERVER_NAME="${1:-$SERVER_NAME}"
+
+if [ -z "$SERVER_NAME" ]; then
+  echo "Error: SERVER_NAME is not set.  Pass as a parameter or set env var 'SERVER_NAME'"
+  exit 1
+fi
 # --- 1. Generate Local Certificate ---
 
 # Create the local 'certs' directory if it doesn't exist
@@ -16,7 +22,7 @@ fi
 # --- 2. Copy Certificate to System Location ---
 
 # Define the target directory in a variable for clarity
-TARGET_DIR="/etc/letsencrypt/live/rb-desktop"
+TARGET_DIR="/etc/letsencrypt/live/"$SERVER_NAME
 
 # Create the target directory if it doesn't exist
 # This command requires sudo if you are not running as root
