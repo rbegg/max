@@ -1,9 +1,12 @@
+#
+# Generic ollama container for uses outside of max, example: for local code generation.
+#
 version: '3.8'
 
 services:
   ollama:
     build: .
-    container_name: ollama-gpu
+    container_name: ollama
     restart: unless-stopped
 
     deploy:
