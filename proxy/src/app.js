@@ -84,7 +84,14 @@ async function startRecording() {
 
     } catch (error) {
         console.error('Error starting recording:', error);
-        updateStatus(`Error: ${error.message}`);
+        const errorMsg = `Error: ${error.name} - ${error.message}`;
+        updateStatus(errorMsg);
+
+        // Check for specific common failures
+        if (error.message.includes("worklet")) {
+            console.warn("Check if https://localhost:8443/vad.worklet.bundle.js is accessible and SSL is trusted.");
+        }
+
         stopRecording();
     }
 }

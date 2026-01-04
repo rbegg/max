@@ -74,15 +74,16 @@ services:
     build:
       target: dev
     ports:
-      - "${PROXY_HTTP_PORT:-8080}:5173" # use vite web server in development
-      - "${PROXY_HTTPS_PORT:-8443}:443"
+      - "${PROXY_HTTP_PORT:-8080}:8080"
+      - "${PROXY_HTTPS_PORT:-8443}:8443"
     volumes:
        # mount a replacement nginx.cong to set workers to 1
       - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      # 1. Mount the template to the correct directory
-      #- ./proxy/certs:/etc/nginx/certs:ro
+      # Mount the dev template
+      - ./proxy/nginx/dev.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./proxy/certs:/etc/nginx/certs:ro
       - ./proxy:/proxy
-      - /proxy/node_modules
+      - node_modules:/proxy/node_modules
 
   # -------------------------------------------------------------------------------------
   # node4j Database SERVICE

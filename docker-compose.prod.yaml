@@ -59,10 +59,10 @@ services:
     build:
       target: prod
     ports:
-      - "${PROXY_HTTP_PORT:-80}:80" # use nginx web server in production
-      - "${PROXY_HTTPS_PORT:-9443}:443"
+      - "${PROXY_HTTP_PORT:-80}:${PROXY_HTTP_PORT:-9080}"
+      - "${PROXY_HTTPS_PORT:-443}:${PROXY_HTTPS_PORT:-9443}"
     volumes:
-      # mount a replacement nginx.cong to set workers to 1
+      # mount a replacement nginx.conf to set workers to 1
       - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # Mount the production template
       - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
