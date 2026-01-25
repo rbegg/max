@@ -24,7 +24,7 @@
     # --------------------------------------------------------------------------
     server {
         listen ${PROXY_HTTPS_PORT} ssl;
-        server_name _;
+        server_name ${SERVER_NAME};
 
         # --- SSL/TLS Configuration ---
         ssl_certificate ${SSL_CERTIFICATE_PATH};
