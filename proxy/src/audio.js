@@ -12,39 +12,68 @@ let prevSource = null;
 let isMuted = false;
 
 export function initAudio() {
-    if (audioContext) {
-        return;
+    console.log("***Init AudioContext***")
+    if (!audioContext) {
+        try {
+            // Force 44.1kHz to match iOS hardware and avoid resampling crashes
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            audioContext = new AudioContextClass({ sampleRate: 44100 });
+            console.log("Init AudioContext: Set Sample Rate")
+
+            gainNode = audioContext.createGain();
+            gainNode.connect(audioContext.destination);
+
+            audioContext.onstatechange = () => {
+                console.log("AudioContext state change:", audioContext.state);
+
+                // If iOS interrupts the app (phone call, alarm, etc.),
+                // we attempt to resume once the interruption ends.
+                if (audioContext.state === 'interrupted' || audioContext.state === 'suspended') {
+                    console.log("Attempting to resume interrupted audio context...");
+                    audioContext.resume().catch(err => console.error("Resume failed:", err));
+                }
+            };
+        } catch (e) {
+            console.error("Web Audio API is not supported in this browser", e);
+        }
     }
-    try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        gainNode = audioContext.createGain();
-        gainNode.connect(audioContext.destination);
-        // Start unmuted
-        gainNode.gain.value = 1;
-    } catch (e) {
-        console.error("Web Audio API is not supported in this browser", e);
+    // Crucial for iOS: resume() must be called inside a user-initiated event
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
     }
 }
 
-export async function playAudio(arrayBuffer) {
-    if (!audioContext || !gainNode) {
-        console.warn("Audio context not ready, skipping playback.");
-        return;
-    }
-
-    try {
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        const source = audioContext.createBufferSource();
-        if (prevSource) {
-            prevSource.stop();
+export function playAudio(arrayBuffer) {
+    return new Promise((resolve, reject) => {
+        if (!audioContext || !gainNode) {
+            console.warn("Audio context not ready.");
+            return resolve();
         }
-        source.buffer = audioBuffer;
-        source.connect(gainNode);
-        source.start(0);
-        prevSource = source;
-    } catch (error) {
-        console.error("Error decoding or playing audio:", error);
-    }
+
+        audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
+            const source = audioContext.createBufferSource();
+            if (prevSource) {
+                try { prevSource.stop();
+                      prevSource.disconnect(); // CRITICAL: Free memory
+                } catch(e) {}
+            }
+
+            source.buffer = audioBuffer;
+            source.connect(gainNode);
+
+            // Resolve the promise when the audio finishes playing
+            source.onended = () => {
+                source.disconnect(); // CRITICAL: Release the node after playback
+                resolve();
+            };
+
+            source.start(0);
+            prevSource = source;
+        }, (error) => {
+            console.error("Error decoding audio:", error);
+            reject(error);
+        });
+    });
 }
 
 export function toggleMute() {
