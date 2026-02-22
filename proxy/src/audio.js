@@ -71,7 +71,7 @@ export function playAudio(arrayBuffer) {
             prevSource = source;
         }, (error) => {
             console.error("Error decoding audio:", error);
-            reject(error);
+            resolve();
         });
     });
 }

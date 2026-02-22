@@ -62,7 +62,7 @@
         # Prevent fallback for binary/module assets
         # This ensures a real 404 if the file isn't found,
         # helping debug the actual file path.
-        location ~* \.(onnx|wasm|mjs)$ {
+        location ~* \.(onnx|wasm|mjs|js)$ {
             root /usr/share/nginx/html;
             add_header Cross-Origin-Opener-Policy "same-origin";
             add_header Cross-Origin-Embedder-Policy "require-corp";

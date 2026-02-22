@@ -35,7 +35,7 @@ async function handleWebSocketMessage(event) {
             console.error("Error during audio handling:", error);
         } finally {
             // 4. Resume VAD so the user can speak again
-            if (micVad && micVad.state !== 'destroyed') {
+            if (micVad && typeof micVad.start === 'function') {
                 micVad.start();
                 console.log("VAD resumed.");
             }

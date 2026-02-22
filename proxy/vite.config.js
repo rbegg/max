@@ -15,19 +15,21 @@ export default defineConfig(({ mode }) => {
       basicSsl(),
       viteStaticCopy({
         targets: [
-          { src: 'node_modules/onnxruntime-web/dist/*.wasm', dest: '.' },
-          { src: 'node_modules/onnxruntime-web/dist/*.mjs', dest: '.' },
-          { src: 'node_modules/@ricky0123/vad-web/dist/*.onnx', dest: 'assets' },
-          { src: 'node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.dev.js', dest: '.', rename: 'vad.worklet.bundle.js' }
+          {
+            // Copy the WASM, ONNX, and the browser-compatible JS wrapper
+            src: 'node_modules/@gooney-001/ten-vad-lib/*.{wasm,onnx,js}',
+            dest: 'lib'
+          }
         ]
       })
     ],
-    // Prevents Vite from breaking ONNX internal paths
-    optimizeDeps: {
-      exclude: ['onnxruntime-web', '@ricky0123/vad-web']
-    },
     build: {
-      assetsInlineLimit: 0
+      assetsInlineLimit: 0,
+      rollupOptions: {
+        external: [
+          '/lib/ten_vad.js'
+        ]
+      }
     }
   };
 });

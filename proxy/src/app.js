@@ -66,7 +66,7 @@ async function startRecording() {
 
         const positiveSpeechThreshold = parseFloat(elements.thresholdInput.value);
         const pauseDurationMs = parseInt(elements.pauseDurationInput.value);
-        const redemptionFrames = Math.round(pauseDurationMs / 32);
+        const redemptionFrames = Math.round(pauseDurationMs / 16);
 
         console.log(`VAD settings: Threshold=${positiveSpeechThreshold}, Redemption Frames=${redemptionFrames}`);
 
