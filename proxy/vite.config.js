@@ -1,27 +1,35 @@
 import { defineConfig, loadEnv } from 'vite';
+import basicSsl from '@vitejs/plugin-basic-ssl';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig(({ mode }) => {
   // Load environment variables
   const env = loadEnv(mode, process.cwd(), '');
 
-  const proxyTarget = `http://${env.ASSISTANT_HOST}:80`;
+  // Prioritize system environment variables
+  const assistantHost = process.env.ASSISTANT_HOST || env.ASSISTANT_HOST || 'assistant';
+  const proxyTarget = `http://${assistantHost}:80`;
 
   return {
-    server: {
-      headers: {
-        // These headers are required to enable SharedArrayBuffer,
-        // which is used by the VAD library's underlying worklets.
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp",
-      },
-      proxy: {
-        // Any request to '/ws' will be proxied.
-        '/ws': {
-          target: proxyTarget,
-          ws: true, // This is essential for WebSockets to work.
-        },
-      },
-    },
+    plugins: [
+      basicSsl(),
+      viteStaticCopy({
+        targets: [
+          {
+            // Copy the WASM, ONNX, and the browser-compatible JS wrapper
+            src: 'node_modules/@gooney-001/ten-vad-lib/*.{wasm,onnx,js}',
+            dest: 'lib'
+          }
+        ]
+      })
+    ],
+    build: {
+      assetsInlineLimit: 0,
+      rollupOptions: {
+        external: [
+          '/lib/ten_vad.js'
+        ]
+      }
+    }
   };
 });
-
