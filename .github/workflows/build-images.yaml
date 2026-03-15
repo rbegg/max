@@ -27,6 +27,7 @@ jobs:
             target: prod
           - service: ollama
             context: ./services/ollama
+            OLLAMA_DEBUG: 0
             # no target needed
           - service: proxy
             context: ./proxy

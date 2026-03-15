@@ -1,12 +1,13 @@
 # Use an official NVIDIA CUDA runtime image as a parent image.
 ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
+ARG OLLAMA_DEBUG=0
 
 FROM ${BASE_IMAGE}
 
 # Set environment variables for non-root user and new models path
 ENV OLLAMA_HOST=0.0.0.0 \
     OLLAMA_MODELS=/home/ollama/.ollama \
-    DEBUG=${OLLAMA_DEBUG:-0}
+    DEBUG=$OLLAMA_DEBUG
 
 # Install dependencies needed for the Ollama install script
 RUN apt-get update && apt-get install -y \
