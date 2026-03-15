@@ -17,14 +17,19 @@ jobs:
         include:
           - service: max-stt
             context: ./services/max-stt
+            target: prod
           - service: max-assistant
             context: ./services/max-assistant
+            target: prod
           - service: max-tts
             context: ./services/max-tts
+            target: prod
           - service: ollama
             context: ./services/ollama
+            # no target needed
           - service: proxy
             context: ./proxy
+            target: prod
 
     steps:
       - name: Checkout code
