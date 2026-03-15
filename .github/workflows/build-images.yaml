@@ -52,8 +52,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.context }}
-          # Use the 'prod' target defined in your compose files
-          target: prod
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
