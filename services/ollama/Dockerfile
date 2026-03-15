@@ -9,10 +9,14 @@ ENV OLLAMA_HOST=0.0.0.0 \
     DEBUG=${OLLAMA_DEBUG:-0}
 
 # Install dependencies needed for the Ollama install script
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y \
+    curl \
+    zstd \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama using the official script (as root)
-RUN curl -fsSL https://ollama.com/install.sh | sh
+#RUN curl -fsSL https://ollama.com/install.sh | sh
+RUN curl -fsSL https://ollama.com/install.sh | OLLAMA_INSTALL_IN_CONTAINER=1 sh
 
 # Create a non-root user 'ollama' with UID/GID 1000
 # and create the home directory.
