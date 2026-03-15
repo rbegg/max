@@ -18,6 +18,7 @@ jobs:
           - service: max-stt
             context: ./services/max-stt
             target: prod
+            log_level: info
           - service: max-assistant
             context: ./services/max-assistant
             target: prod
