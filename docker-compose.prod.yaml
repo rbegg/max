@@ -65,8 +65,8 @@ services:
       # mount a replacement nginx.conf to set workers to 1
       - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # Mount the production template
-      - ./proxy/nginx/prod.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./proxy/nginx/conf.template:/etc/nginx/templates/default.conf.template:ro
       # Mount your SSL certificates (obtained via Certbot or another provider)
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /etc/nginx/certs:/etc/nginx/certs:ro
 
 
