@@ -182,11 +182,11 @@
           - SSL_CERTIFICATE_KEY_PATH= ${SSL_CERTIFICATE_KEY_PATH}
         healthcheck:
           # This command checks if Nginx is responding with a success code
-          test: [ "CMD", "curl", "-f", "http://localhost" ]
-          interval: 60s
+          test: ["CMD-SHELL", "curl -f http://localhost:$${PROXY_HTTP_PORT:-80}"]
+          interval: 30s
           timeout: 10s
           retries: 3
-          start_period: 60s
+          start_period: 10s
 
       # -------------------------------------------------------------------------------------
       # node4j Database SERVICE

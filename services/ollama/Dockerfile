@@ -1,5 +1,7 @@
 # Use an official NVIDIA CUDA runtime image as a parent image.
-ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
+#ARG BASE_IMAGE=nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
+ARG BASE_IMAGE=nvidia/cuda:13.2.0-cudnn-runtime-ubuntu24.04
+#ARG BASE_IMAGE=nvidia/cuda:13.2.0-cudnn-runtime-ubuntu26.04
 ARG OLLAMA_DEBUG=0
 
 FROM ${BASE_IMAGE}
@@ -20,10 +22,10 @@ RUN apt-get update && apt-get install -y \
 #RUN curl -fsSL https://ollama.com/install.sh | sh
 RUN curl -fsSL https://ollama.com/install.sh | OLLAMA_INSTALL_IN_CONTAINER=1 sh
 
-# Create a non-root user 'ollama' with UID/GID 1000
-# and create the home directory.
-RUN groupadd -g 1000 ollama && \
-    useradd -u 1000 -g 1000 -m -s /bin/bash ollama
+# Rename the existing 'ubuntu' group to 'ollama'
+RUN groupmod -n ollama ubuntu && \
+    # Rename the user 'ubuntu' to 'ollama', set the new home path, and move the content
+    usermod -l ollama -d /home/ollama -m ubuntu
 
 # Create the models directory and set permissions
 RUN mkdir -p ${OLLAMA_MODELS} && \
