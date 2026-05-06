@@ -69,6 +69,16 @@ services:
   # -------------------------------------------------------------------------------------
   # proxy SERVICE
   # -------------------------------------------------------------------------------------
+
+  # New service to build and tag the base Node environment for IDE
+  proxy-base:
+    image: proxy-dev-base
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+      target: base  # This specifically builds up to the Node.js stage
+
+ # actual proxy service
   proxy:
     image: proxy-dev
     build:

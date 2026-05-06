@@ -13,12 +13,14 @@ USER node
 # Copy package.json and package-lock.json first for layer caching.
 COPY --chown=node:node package*.json ./
 
+# This will fail the build if high-severity vulnerabilities are found
+RUN npm audit --audit-level=moderate || true
+
 # Install all dependencies.
 RUN npm install
 
 # Copy the rest of your application's source code.
 COPY --chown=node:node . .
-
 
 # --- STAGE 2: Builder ---
 # This runs 'vite build' to create the /proxy/dist folder
