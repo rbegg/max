@@ -9,6 +9,7 @@ export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
 
 DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
 PROD_COMPOSE = docker compose --env-file .env -f docker-compose.yaml -f docker-compose.prod.yaml
+SHARED_COMPOSE = docker compose -p shared-ai -f docker-compose.shared.yaml
 
 # Always include logging for down cmds
 DEV_COMPOSE_LOG = $(DEV_COMPOSE) -f docker-compose.logging.yaml
@@ -26,9 +27,14 @@ echo:
 	@echo "DEV CMD     = " $(DEV_COMPOSE)
 	@echo "PROD CMD    = " $(PROD_COMPOSE)
 
+shared:
+	$(SHARED_COMPOSE) up --build -d
+
+shared-down:
+	$(SHARED_COMPOSE) down
 
 ## Build and start the development containers
-dev:
+dev: shared
 	$(DEV_COMPOSE) up --build
 
 a-test:
@@ -41,7 +47,7 @@ dev-down:
 # --- Production Commands ---
 
 ## Build and start the production containers in detached mode
-prod:
+prod: shared
 	$(PROD_COMPOSE) up --build -d
 
 ## Stop the production containers

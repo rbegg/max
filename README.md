@@ -80,13 +80,14 @@ Before you begin, ensure you have the following installed:
 
 4. **Run the Setup Script**:
    This script creates the necessary external Docker volumes (`model_cache` and `ollama_models`) for persisting model 
-   data.  The server-name (hostname of the the server running max) must be passed as a parameter or be defined as an 
-   environment variable.
+   data and the shared ai-network.  
    ```bash
    bash scripts/setup.sh <server-name>
    ```
 5. **Run the proxy setup script**:
-   This script will generate SLL Certificates for development and test usage, execute from the `max/proxy/` directory.
+   This script will generate SLL Certificates for development and test usage, execute from the `max/proxy/` directory.  
+   The server-name (hostname of the server running max) must be passed as a parameter or be defined as an 
+   environment variable `SERVER_NAME`.
    ```bash
    cd proxy
    sudo bash scripts/setup.sh

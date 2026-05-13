@@ -19,4 +19,8 @@ create_docker_volume "ollama_models"
 create_docker_volume "stt_models"
 create_docker_volume "neo4j_data"
 
+echo "Setting up required Docker Networks..."
+docker network inspect ai-shared-network >/dev/null 2>&1 || \
+docker network create ai-shared-network
+
 echo "Setup complete. You can now run 'make dev' or 'make prod' etc."

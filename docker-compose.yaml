@@ -95,6 +95,9 @@
           # Target is set in override files
           args:
             - PYTHON_VERSION=3.11
+        networks:
+          - ai-shared-network
+          - default
         environment:
           - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
           - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llama3}
@@ -117,47 +120,13 @@
         depends_on:
           - stt
           - tts
-          - ollama
+          # Ollama moved to shared ser
+          # - ollama
           - neo4j
         volumes:
           - "/etc/timezone:/etc/timezone:ro"
           - "/etc/localtime:/etc/localtime:ro"
 
-
-      # -------------------------------------------------------------------------------------
-      # Ollama SERVICE
-      # -------------------------------------------------------------------------------------
-      ollama:
-        build:
-          context: ./services/ollama
-          dockerfile: Dockerfile
-        image: ollama-gpu
-        # Alternative official ollama image
-        # image: ollama/ollama:latest
-        restart: unless-stopped
-        user: "1000:1000"
-        environment:
-          - OLLAMA_KEEP_ALIVE=-1
-          - DEBUG=${OLLAMA_DEBUG:-0}
-        # Needed if using official ollama image
-        #  - OLLAMA_MODELS=/home/ollama/.ollama
-        deploy:
-          resources:
-            reservations:
-              devices:
-                - driver: nvidia
-                  count: all
-                  capabilities: [gpu]
-        volumes:
-          # Mount the named volume to the NEW non-root user's models directory
-          - ollama_models:/home/ollama/.ollama
-        healthcheck:
-          # Check if the Ollama API is responding.
-          test: [ "CMD", "curl", "-f", "http://localhost:11434" ]
-          interval: 120s
-          timeout: 15s
-          retries: 3
-          start_period: 240s
 
       # -------------------------------------------------------------------------------------
       # proxy SERVICE
@@ -218,3 +187,7 @@
         external: true
       neo4j_data:
         external: true
+
+    networks:
+      ai-shared-network:
+        external: true          # Tells Docker this network already exists
