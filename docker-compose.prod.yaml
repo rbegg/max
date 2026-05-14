@@ -67,6 +67,6 @@ services:
       # Mount the production template
       - ./proxy/nginx/conf.template:/etc/nginx/templates/default.conf.template:ro
       # Mount your SSL certificates (obtained via Certbot or another provider)
-      - /etc/nginx/certs:/etc/nginx/certs:ro
+      - ./proxy/certs:/etc/nginx/certs:ro
 
 

@@ -18,6 +18,7 @@ create_docker_volume "model_cache"
 create_docker_volume "ollama_models"
 create_docker_volume "stt_models"
 create_docker_volume "neo4j_data"
+create_docker_volume "neo4j_data_dev"
 
 echo "Setting up required Docker Networks..."
 docker network inspect ai-shared-network >/dev/null 2>&1 || \

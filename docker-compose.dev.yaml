@@ -97,9 +97,9 @@ services:
   # node4j Database SERVICE
   # -------------------------------------------------------------------------------------
   neo4j:
-    ports:
-      - "7474:7474" # Neo4j Browser
-      - "7687:7687" # Bolt (database connection)
+    volumes:
+    # Override volume for dev
+      - neo4j_data_dev:/data
 
   # -------------------------------------------------------------------------------------
   # VOLUMES
@@ -109,3 +109,5 @@ volumes:
   venv:
   # Define the named volume for node modules
   node_modules:
+  neo4j_data_dev:
+    external: true
