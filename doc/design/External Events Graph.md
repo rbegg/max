@@ -1,4 +1,4 @@
-# Temporary Chat
+# External Events Graph
 
 **Exported:** 5/20/2026 9:21:52  
 **Link:** [https://gemini.google.com/app/f6534547ae809482](https://gemini.google.com/app/f6534547ae809482)
