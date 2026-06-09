@@ -28,6 +28,8 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+    ports:
+      - "127.0.0.1:11434:11434"
     volumes:
       # Mount the named volume to the NEW non-root user's models directory
       - ollama_models:/home/ollama/.ollama

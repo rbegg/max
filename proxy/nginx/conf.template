@@ -26,6 +26,9 @@
         listen ${PROXY_HTTPS_PORT} ssl;
         server_name ${SERVER_NAME};
 
+        # Define the Docker DNS resolver
+        resolver 127.0.0.11 valid=30s;
+
         # --- SSL/TLS Configuration ---
         ssl_certificate ${SSL_CERTIFICATE_PATH};
         ssl_certificate_key ${SSL_CERTIFICATE_KEY_PATH};
@@ -73,7 +76,9 @@
 
         # Route the client's WebSocket (wss://) to the Assistant Service
         location /ws {
-            proxy_pass http://assistant_service;
+            set $assistant_service "http://${ASSISTANT_HOST}";
+            proxy_pass $assistant_service;
+
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
