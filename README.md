@@ -1,4 +1,30 @@
-# MAX: Multi-Service AI Application Stack
+# MAX: AI Agent for Seniors with Dementia
+
+## Purpose
+
+The MAX project is designed to provide a voice-based AI agent specifically tailored for seniors with dementia. 
+This agent aims to maximize their quality of life by encouraging and supporting interactions with family and friends, 
+and helping to make technology more accessible.
+
+The project is designed to be run on local HW and configured/managed by a trusted family member or caregiver.
+A key goal is to allow the family member to spend more time visiting as family and less time managing their itinerary. 
+
+## Key Features
+
+Max:
+* has personalized knowledge of family and friends to help the senior stay connected
+* has knowledge of the daily itinerary and upcoming appointments
+* can both answer questions and prompt the senior with reminders or suggestions throughout the day
+* can take notes and reminders from the senior and incorporate them into the daily itinerary
+* can manage a smart TV and help play media from a curated playlist 
+
+For the primary caregiver (typically a family member) Max:
+* can be configured with appropriate guidelines and reminders for the senior
+* can send daily summaries of the senior's activities to the caregiver
+* can take feedback to improve the agent's interactions with the senior
+
+
+# Technical Overview: Multi-Service AI Application Stack
 
 This project provides a robust, containerized environment for running a suite of AI services. It uses Docker Compose to
 orchestrate a Speech-to-Text (STT) application, a LangChain agent service (`max`), an Ollama Large Language Model (LLM)
@@ -22,52 +48,78 @@ inference.
 
 ## Architecture
 
-The application is composed of the following services:
+The Max Project is composed of the following services:
 
-- **`web-server`**: A FastAPI service that provides the user interface. It serves a static single-page application that
-  acts as the client for the real-time transcription service.
+**1. Proxy & Web Server Service**
+* **Summary:** 
+Acts as the single entry point for all incoming traffic, handling SSL termination and routing requests to the appropriate backend services.
+Provides the user interface by serving a static single-page application that acts as the client for the real-time transcription service.
+* **Tech Stack:** NGINX, Python, FastAPI, and Uvicorn.
 
-- **`stt`**: The core Speech-to-Text (STT) engine. This FastAPI service uses the `faster-whisper` model to perform
-  real-time audio transcription over a WebSocket connection.
+**2. STT (Speech-to-Text) Service**
+* **Summary:** The core engine that performs real-time audio transcription over a WebSocket connection.
+* **Tech Stack:** Python, FastAPI, Uvicorn, `faster-whisper`, and NumPy. It is configured to leverage NVIDIA GPU acceleration but can fall back to CPU.
 
-- **`assistant`**: An AI assistant service responsible for handling more complex queries and tasks, leveraging the
-  underlying language model.
+**3. Assistant Service**
+* **Summary:** The core "brain" or AI agent responsible for handling complex queries, executing reasoning loops, calling tools (like Gmail and Neo4j), and acting as the main backend logic.
+* **Tech Stack:** Python, FastAPI, Uvicorn, LangChain, LangGraph, Pydantic, Neo4j Python driver, and Google Auth/API Clients.
 
-- **`ollama`**: Provides the core Large Language Model (LLM) capabilities that are utilized by other services, such as
-  the `assistant`.
+**4. TTS (Text-to-Speech) Service**
+* **Summary:** Synthesizes the LLM's text responses back into audio.
+* **Tech Stack:** Containerized service exposing an endpoint and configured with specific voice models (e.g., `en_US-lessac-medium`).
 
-- **`proxy`**: An Nginx reverse proxy that acts as the single entry point for all incoming traffic. It handles SSL
-  termination and routes requests to the appropriate backend service.
+**5. Ollama Service**
+* **Summary:** Provides the core Large Language Model (LLM) capabilities that are utilized by the Assistant service.
+* **Tech Stack:** Ollama engine with NVIDIA GPU acceleration, hosting models such as `llama3.1:8b-instruct-q4_K_M`.
+
+**6. Neo4j Database Service**
+* **Summary:** A graph database responsible for persisting user profiles, family trees, schedules, and application relationships.
+* **Tech Stack:** Neo4j graph database with the APOC plugin and Cypher query language.
+
+**7. Proxy Service**
+* **Summary:** Acts as the single entry point for all incoming traffic, handling SSL termination and routing requests to the appropriate backend services.
+* **Tech Stack:** NGINX. The frontend assets are built using Node.js and Vite.
+
+**7. Roku TV Service (Under Development)**
+* **Summary:** Provides a wrapper to ROKU ECP to allow agent control of tv streaming content from multiple providers.
+* **Tech Stack:** Python, FastAPI
+
+**9. Logging Services (Optional)**
+* **Summary:** Provides centralized log aggregation and dashboard visualization for the application suite.
+* **Tech Stack:** Grafana and Loki (using the Loki Docker driver).
 
 Docker named volumes (`model_cache`, `ollama_models`) are used to persist AI models and cache, preventing re-downloads
 on container restarts.
 
 ## Prerequisites
+This project requires Linux or WSL2 environment, and has been tested on Ubuntu 22.04 and 24.04.
+The web application can be run in any browser with connectivity to the host machine, ans has been tested with 
+chrome on Windows and safari on an iPhone.
 
 Before you begin, ensure you have the following installed:
 
 * **Docker Engine**: [Installation Guide](https://docs.docker.com/engine/install/)
 * **Docker Compose**: [Installation Guide](https://docs.docker.com/compose/install/)
 * **Docker Plugin**: `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
-* **NVIDIA Container Toolkit**: Required for GPU
-  support. [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+* **NVIDIA Container Toolkit**: Required for GPU support. [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 * **make**: A build automation tool, typically pre-installed on Linux and macOS.
 
 ## Setup
 
 1. **Clone the Repository**:
+Max is super-repo with multiple sub-repos for the services to enable flexible future development and testing.
    ```bash
-   git clone <your-repository-url>
-   cd <your-project-directory>
+   git clone --recurse-submodules https://github.com/rbegg/max.git
    ```
 
-2. **Initialize Git Submodules** (if any are used):
+   If you already cloned the repo, without the `--recurse-submodules` flag, then: 
    ```bash
+   cd max
    git submodule update --init --recursive
    ```
 
-3. **Configure Environment**:
-   **Configure Your Environment**
+2. **Configure Environment**: 
+
    The project uses `.env` files for configuration. Start by copying the template file for both development and
    to test the production environment. <mark> Live production should never use a file but use ENV Variables managed 
    in the host system</mark>
@@ -78,13 +130,15 @@ Before you begin, ensure you have the following installed:
     ```
     Next, review the variables in `.env` and `.env.dev` and customize them as needed (e.g., ports, model configurations).
 
-4. **Run the Setup Script**:
+3. **Run the Setup Script**:
+
    This script creates the necessary external Docker volumes (`model_cache` and `ollama_models`) for persisting model 
    data and the shared ai-network.  
    ```bash
    bash scripts/setup.sh <server-name>
    ```
-5. **Run the proxy setup script**:
+4. **Run the proxy setup script**:
+ 
    This script will generate SLL Certificates for development and test usage, execute from the `max/proxy/` directory.  
    The server-name (hostname of the server running max) must be passed as a parameter or be defined as an 
    environment variable `SERVER_NAME`.
@@ -93,12 +147,13 @@ Before you begin, ensure you have the following installed:
    sudo bash scripts/setup.sh
    cd ..
    ```
-6. **Run the max-assistant setup script**:
+5. **Run the max-assistant setup script**:
+ 
    This script will load the sample data from max/services/max-assistant/csv_data
    and authenticate the gmail client.
    The scripts are dependent on ```env.local``` located in the max-assistant directory.
  
-   **TODO** cleanup use of .env files.
+   > **TODO**: cleanup use of .env files.
 
    To run the script:
    ```bash
@@ -110,7 +165,7 @@ Before you begin, ensure you have the following installed:
 ## Configuration
 
 This project uses a `Makefile` to simplify common commands for development and to test the production environments.
-The docker commands in the makefile will utilize the .env file for production and .env.dev for development.
+The docker commands in the makefile will use the .env file for production and .env.dev for development.
 
 ### SSL
 
