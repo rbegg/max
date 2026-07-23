@@ -7,3 +7,4 @@ proxy/dist/
 *.env.local
 node_modules/
 *:Zone.Identifier
+digest.txt
