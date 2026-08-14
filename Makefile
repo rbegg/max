@@ -70,5 +70,6 @@ logs-ui:
 clean:
 	$(DEV_COMPOSE) down -v
 	$(PROD_COMPOSE) down -v
+	$(SHARED_COMPOSE) down -v
 
 .PHONY: dev dev-down dev-shell prod prod-down clean
