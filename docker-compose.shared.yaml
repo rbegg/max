@@ -6,6 +6,7 @@ services:
   # -------------------------------------------------------------------------------------
   ollama:
     container_name: ollama-gpu
+    profiles: ["container-ollama"]
     build:
       context: ./services/ollama
       dockerfile: Dockerfile
@@ -21,13 +22,13 @@ services:
       - DEBUG=${OLLAMA_DEBUG:-0}
     # Needed if using official ollama image
     #  - OLLAMA_MODELS=/home/ollama/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [ gpu ]
     ports:
       - "127.0.0.1:11434:11434"
     volumes:

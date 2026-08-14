@@ -1,0 +1,12 @@
+# docker-compose.gpu.yaml
+# included for builds targeting Nvidia GPUs
+services:
+  stt:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+

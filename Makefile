@@ -5,7 +5,9 @@ GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_HASH   := $(shell git rev-parse --short HEAD)
 export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
 
-
+# This silently searches the env files for 'GPU=1'. If found, the variable is populated.
+DEV_HAS_GPU := $(shell grep -E '^GPU=1' .env.dev 2>/dev/null)
+PROD_HAS_GPU := $(shell grep -E '^GPU=1' .env 2>/dev/null)
 
 DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
 PROD_COMPOSE = docker compose --env-file .env -f docker-compose.yaml -f docker-compose.prod.yaml
@@ -21,6 +23,23 @@ ifdef LOG
 	PROD_COMPOSE += -f docker-compose.logging.yaml
 endif
 
+# --- Hardware Overrides ---
+
+# If .env.dev has GPU=1, append the main GPU compose file to dev commands
+ifneq ($(DEV_HAS_GPU),)
+	DEV_COMPOSE += -f docker-compose.gpu.yaml
+endif
+
+# If .env has GPU=1, append the main GPU compose file to prod commands
+ifneq ($(PROD_HAS_GPU),)
+	PROD_COMPOSE += -f docker-compose.gpu.yaml
+endif
+
+# If EITHER environment has GPU=1, append the shared GPU compose file to shared commands
+ifneq ($(DEV_HAS_GPU)$(PROD_HAS_GPU),)
+	SHARED_COMPOSE += -f docker-compose.shared.gpu.yaml
+endif
+
 # --- Development Commands ---
 echo:
 	@echo "APP_VERSION = " $(APP_VERSION)
@@ -28,13 +47,16 @@ echo:
 	@echo "PROD CMD    = " $(PROD_COMPOSE)
 
 shared:
-	$(SHARED_COMPOSE) up --build -d
+	$(SHARED_COMPOSE) up -d
 
 shared-down:
 	$(SHARED_COMPOSE) down
 
 ## Build and start the development containers
 dev: shared
+	$(DEV_COMPOSE) up
+
+dev-build: shared
 	$(DEV_COMPOSE) up --build
 
 a-test:
@@ -48,6 +70,9 @@ dev-down:
 
 ## Build and start the production containers in detached mode
 prod: shared
+	$(PROD_COMPOSE) up -d
+
+prod-build: shared
 	$(PROD_COMPOSE) up --build -d
 
 ## Stop the production containers
