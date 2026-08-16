@@ -7,7 +7,7 @@ This agent aims to maximize their quality of life by encouraging and supporting 
 and helping to make technology more accessible.
 
 The project is designed to be run on local HW and configured/managed by a trusted family member or caregiver.
-A key goal is to allow the family member to spend more time visiting as family and less time managing their itinerary. 
+A key goal is to allow the family member to spend more time visiting as family and less time with day-to-day navigation.
 
 ## Key Features
 
@@ -70,7 +70,9 @@ Provides the user interface by serving a static single-page application that act
 
 **5. Ollama Service**
 * **Summary:** Provides the core Large Language Model (LLM) capabilities that are utilized by the Assistant service.
-* **Tech Stack:** Ollama engine with NVIDIA GPU acceleration, hosting models such as `llama3.1:8b-instruct-q4_K_M`.
+* **Tech Stack:** 
+  * Ubuntu/WSL: Ollama engine with NVIDIA GPU acceleration, hosting models such as `llama3.1:8b-instruct-q4_K_M`.
+  * macOS: Ollama installed as local application
 
 **6. Neo4j Database Service**
 * **Summary:** A graph database responsible for persisting user profiles, family trees, schedules, and application relationships.
@@ -93,6 +95,7 @@ on container restarts.
 
 ## Prerequisites
 This project requires Linux or WSL2 environment, and has been tested on Ubuntu 22.04 and 24.04.
+Support for macOS is in progress.
 The web application can be run in any browser with connectivity to the host machine, ans has been tested with 
 chrome on Windows and safari on an iPhone.
 
@@ -101,7 +104,10 @@ Before you begin, ensure you have the following installed:
 * **Docker Engine**: [Installation Guide](https://docs.docker.com/engine/install/)
 * **Docker Compose**: [Installation Guide](https://docs.docker.com/compose/install/)
 * **Docker Plugin**: `docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
-* **NVIDIA Container Toolkit**: Required for GPU support. [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+* **GPU Support**: either ...
+  * **NVIDIA Container Toolkit**: Required for GPU support. [Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+  * **macOS**: Metal / MPS included by default with macOS
+* **Ollama**: for macOS, Ollama must be installed as a local application, rather than a docker container.
 * **make**: A build automation tool, typically pre-installed on Linux and macOS.
 
 ## Setup
@@ -210,6 +216,10 @@ To start all services in development mode with hot-reloading enabled for the cus
 ```bash
 make dev
 ```
+If any dependencies change (any changes outside a services /src tree):
+```bash
+make dev-build
+```
 
 - The NGINX proxy service will be avail from your browser via  http  `http://localhost:8080` and https 
   `https://localhost:8443` if the default ports are not in use.  Browsers will only allow microphone access over 
@@ -227,6 +237,10 @@ To build and run the services in detached production like mode:
 
 ```bash
 make prod
+```
+If any dependencies change (any changes outside a services /src tree):
+```bash
+make prod-build
 ```
 
 - The NGINX proxy will redirect HTTP (port 80) to HTTPS (port 443).

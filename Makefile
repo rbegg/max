@@ -47,7 +47,7 @@ echo:
 	@echo "PROD CMD    = " $(PROD_COMPOSE)
 
 shared:
-	$(SHARED_COMPOSE) up -d
+	$(SHARED_COMPOSE) up -d --no-recreate
 
 shared-down:
 	$(SHARED_COMPOSE) down
