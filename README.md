@@ -150,14 +150,16 @@ Max is super-repo with multiple sub-repos for the services to enable flexible fu
    environment variable `SERVER_NAME`.
    ```bash
    cd proxy
-   sudo bash scripts/setup.sh
+   sudo bash scripts/setup.sh <server-name>
    cd ..
    ```
 5. **Run the max-assistant setup script**:
  
    This script will load the sample data from max/services/max-assistant/csv_data
-   and authenticate the gmail client.
-   The scripts are dependent on ```env.local``` located in the max-assistant directory.
+   and optionally authenticate the gmail client.
+   The scripts are dependent on ```env.local``` that must be located in the max-assistant directory.
+   The file can be created by copying the env.template file in the max-assistant directory and renaming it to env.local.
+   The values can be copied from the .env file in the max root directory.
  
    > **TODO**: cleanup use of .env files.
 

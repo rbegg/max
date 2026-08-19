@@ -42,9 +42,10 @@ endif
 
 # --- Development Commands ---
 echo:
-	@echo "APP_VERSION = " $(APP_VERSION)
-	@echo "DEV CMD     = " $(DEV_COMPOSE)
-	@echo "PROD CMD    = " $(PROD_COMPOSE)
+	@echo "APP_VERSION   = " $(APP_VERSION)
+	@echo "DEV CMD       = " $(DEV_COMPOSE)
+	@echo "PROD CMD      = " $(PROD_COMPOSE)
+	@echo "SHARED CMD    = " $(SHARED_COMPOSE)
 
 shared:
 	$(SHARED_COMPOSE) up -d --no-recreate
