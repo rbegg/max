@@ -39,7 +39,7 @@ ifeq ($(IS_MACOS),true)
 	@echo "Opening native Ollama in a new Terminal window..."
 	@pgrep -x "ollama" >/dev/null || osascript -e 'tell application "Terminal" to do script "ollama serve"'
 else
-	$(DEV_SHARED_COMPOSE) up -d --no-recreate ollama
+	$(DEV_SHARED_COMPOSE) up -d ollama
 endif
 
 stt:
