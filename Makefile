@@ -1,104 +1,168 @@
 # Makefile for managing Docker Compose environments
 
-# Define the version
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_HASH   := $(shell git rev-parse --short HEAD)
 export APP_VERSION := $(GIT_BRANCH)-$(GIT_HASH)
 
-# This silently searches the env files for 'GPU=1'. If found, the variable is populated.
-DEV_HAS_GPU := $(shell grep -E '^GPU=1' .env.dev 2>/dev/null)
-PROD_HAS_GPU := $(shell grep -E '^GPU=1' .env 2>/dev/null)
+# --- Platform Detection ---
+UNAME_S  := $(shell uname -s)
+IS_MACOS := $(if $(filter Darwin,$(UNAME_S)),true,false)
 
-DEV_COMPOSE = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml
-PROD_COMPOSE = docker compose --env-file .env -f docker-compose.yaml -f docker-compose.prod.yaml
-SHARED_COMPOSE = docker compose -p shared-ai -f docker-compose.shared.yaml
+# --- Read Feature Flags from .env files ---
+DEV_ENABLE_GPU     := $(shell grep -m1 '^ENABLE_GPU=' .env.dev 2>/dev/null | cut -d= -f2)
+DEV_ENABLE_LOGGING := $(shell grep -m1 '^ENABLE_LOGGING=' .env.dev 2>/dev/null | cut -d= -f2)
+PROD_ENABLE_GPU    := $(shell grep -m1 '^ENABLE_GPU=' .env 2>/dev/null | cut -d= -f2)
+PROD_ENABLE_LOGGING:= $(shell grep -m1 '^ENABLE_LOGGING=' .env 2>/dev/null | cut -d= -f2)
 
-# Always include logging for down cmds
-DEV_COMPOSE_LOG = $(DEV_COMPOSE) -f docker-compose.logging.yaml
-PROD_COMPOSE_LOG = $(PROD_COMPOSE) -f docker-compose.logging.yaml
+# --- Compose Overrides & Flags ---
+DEV_FLAGS  = $(if $(filter true,$(DEV_ENABLE_GPU)),-f docker-compose.gpu.yaml) \
+             $(if $(filter true,$(DEV_ENABLE_LOGGING)),-f docker-compose.logging.yaml --profile logging)
 
-# export LOG=1 to enable logging services
-ifdef LOG
-	DEV_COMPOSE += -f docker-compose.logging.yaml
-	PROD_COMPOSE += -f docker-compose.logging.yaml
+PROD_FLAGS = $(if $(filter true,$(PROD_ENABLE_GPU)),-f docker-compose.gpu.yaml) \
+             $(if $(filter true,$(PROD_ENABLE_LOGGING)),-f docker-compose.logging.yaml --profile logging)
+
+# --- Base Compose Commands ---
+DEV_COMPOSE          = docker compose --env-file .env.dev -f docker-compose.yaml -f docker-compose.dev.yaml $(DEV_FLAGS)
+DEV_SHARED_COMPOSE   = docker compose --env-file .env.dev -f docker-compose.yaml --profile shared $(if $(filter true,$(DEV_ENABLE_GPU)),-f docker-compose.gpu.yaml)
+
+PROD_COMPOSE         = docker compose --env-file .env -f docker-compose.yaml --profile shared $(PROD_FLAGS)
+PROD_SHARED_COMPOSE  = docker compose --env-file .env -f docker-compose.yaml --profile shared $(if $(filter true,$(PROD_ENABLE_GPU)),-f docker-compose.gpu.yaml)
+PROD_MACOS_CORE      = docker compose --env-file .env -f docker-compose.yaml $(PROD_FLAGS)
+
+
+# ==============================================================================
+# INDIVIDUAL SERVICE TARGETS (Development Focus)
+# ==============================================================================
+
+ollama:
+ifeq ($(IS_MACOS),true)
+	@echo "Opening native Ollama in a new Terminal window..."
+	@pgrep -x "ollama" >/dev/null || osascript -e 'tell application "Terminal" to do script "ollama serve"'
+else
+	$(DEV_SHARED_COMPOSE) up -d ollama
 endif
 
-# --- Hardware Overrides ---
-
-# If .env.dev has GPU=1, append the main GPU compose file to dev commands
-ifneq ($(DEV_HAS_GPU),)
-	DEV_COMPOSE += -f docker-compose.gpu.yaml
+stt:
+ifeq ($(IS_MACOS),true)
+	@echo "Opening native STT in a new Terminal window..."
+	@pgrep -f "uvicorn src.app:app" >/dev/null || osascript -e 'tell application "Terminal" to activate' -e 'tell application "Terminal" to do script "cd $(CURDIR) && bash services/max-stt/scripts/run_native_macos.sh"'
+else
+	$(DEV_COMPOSE) up -d stt
 endif
 
-# If .env has GPU=1, append the main GPU compose file to prod commands
-ifneq ($(PROD_HAS_GPU),)
-	PROD_COMPOSE += -f docker-compose.gpu.yaml
-endif
+tts:
+	$(DEV_COMPOSE) up -d tts
 
-# If EITHER environment has GPU=1, append the shared GPU compose file to shared commands
-ifneq ($(DEV_HAS_GPU)$(PROD_HAS_GPU),)
-	SHARED_COMPOSE += -f docker-compose.shared.gpu.yaml
-endif
+assistant:
+	$(DEV_COMPOSE) up -d assistant
 
-# --- Development Commands ---
-echo:
-	@echo "APP_VERSION   = " $(APP_VERSION)
-	@echo "DEV CMD       = " $(DEV_COMPOSE)
-	@echo "PROD CMD      = " $(PROD_COMPOSE)
-	@echo "SHARED CMD    = " $(SHARED_COMPOSE)
+proxy:
+	$(DEV_COMPOSE) up -d proxy
 
-shared:
-	$(SHARED_COMPOSE) up -d --no-recreate
+neo4j:
+	$(DEV_SHARED_COMPOSE) up -d --no-recreate neo4j
+
+
+# ==============================================================================
+# DEVELOPMENT WORKFLOWS
+# ==============================================================================
+
+## Pre-boot shared/persistent containers (Ollama + Neo4j)
+shared: ollama neo4j
 
 shared-build:
-	$(SHARED_COMPOSE) up --build --detach
+	$(DEV_SHARED_COMPOSE) up --build --detach ollama neo4j
 
 shared-down:
-	$(SHARED_COMPOSE) down
+	$(DEV_SHARED_COMPOSE) down
 
-## Build and start the development containers
-dev: shared
-	$(DEV_COMPOSE) up
+## Start the development environment
+dev: shared stt tts assistant proxy
+	@echo "--- All development services started ---"
+	$(DEV_COMPOSE) logs -f assistant
 
-dev-build: shared
-	$(DEV_COMPOSE) up --build
+dev-build:
+	$(DEV_COMPOSE) build
 
-a-test:
-	$(DEV_COMPOSE) up ollama neo4j --build
+dev-rebuild:
+	$(DEV_COMPOSE) build --no-cache
 
-## Stop the development containers
+## Stop the dev environment (Docker dev services + Mac background processes)
 dev-down:
-	$(DEV_COMPOSE_LOG) down
+	$(DEV_COMPOSE) down
+ifeq ($(IS_MACOS),true)
+	@echo "Terminating native development background processes..."
+	@-pkill -f "uvicorn src.app:app" 2>/dev/null || true
+endif
 
-# --- Production Commands ---
 
-## Build and start the production containers in detached mode
-prod: shared
+# ==============================================================================
+# PRODUCTION WORKFLOWS
+# ==============================================================================
+
+## Standard Linux / Server full-stack production start (All in Docker)
+prod:
 	$(PROD_COMPOSE) up -d
 
-prod-build: shared
-	$(PROD_COMPOSE) up --build -d
+prod-build:
+	$(PROD_COMPOSE) build
 
-## Stop the production containers
+prod-rebuild:
+	$(PROD_COMPOSE) build --no-cache
+
 prod-down:
-	$(PROD_COMPOSE_LOG) down
+	$(PROD_COMPOSE) down
+
+## macOS Production: Native Metal acceleration for Ollama & STT + Docker for core services
+prod-macos:
+	@echo "Ensuring native macOS Ollama is active..."
+	@pgrep -x "ollama" >/dev/null || (ollama serve >/dev/null 2>&1 &)
+	@echo "Starting native macOS STT daemon..."
+	@pgrep -f "uvicorn src.app:app" >/dev/null || (nohup bash services/max-stt/scripts/run_native_macos.sh >/dev/null 2>&1 &)
+	@echo "Starting persistent production database (Neo4j)..."
+	$(PROD_SHARED_COMPOSE) up -d --no-recreate neo4j
+	@echo "Starting production core services (TTS, Assistant, Proxy)..."
+	$(PROD_MACOS_CORE) up -d tts assistant proxy
+
+prod-macos-down:
+	@echo "Stopping production Docker containers..."
+	$(PROD_MACOS_CORE) down
+	$(PROD_SHARED_COMPOSE) down
+	@echo "Stopping native background processes..."
+	@-pkill -f "uvicorn src.app:app" 2>/dev/null || true
+
+
+# ==============================================================================
+# UTILITY COMMANDS
+# ==============================================================================
+
+echo:
+	@echo "APP_VERSION         = $(APP_VERSION)"
+	@echo "IS_MACOS            = $(IS_MACOS)"
+	@echo "DEV_COMPOSE         = $(DEV_COMPOSE)"
+	@echo "DEV_SHARED_COMPOSE  = $(DEV_SHARED_COMPOSE)"
+	@echo "PROD_COMPOSE        = $(PROD_COMPOSE)"
+	@echo "PROD_MACOS_CORE     = $(PROD_MACOS_CORE)"
 
 logs:
 	docker logs -f
 
 logs-ui:
-	@echo "---"
-	@echo "🔍 Starting Grafana and Loki services..."
 	@echo "Access Grafana at: http://localhost:3000"
-	@echo "---"
 	$(PROD_COMPOSE) up -d loki grafana
 
-# --- Utility Commands ---
-
-## Stop all containers and remove volumes (cleans the cache)
+## Stop all containers across environments and remove local volumes
 clean:
 	$(DEV_COMPOSE) down -v
 	$(PROD_COMPOSE) down -v
-	$(SHARED_COMPOSE) down -v
+	$(DEV_SHARED_COMPOSE) down -v
+ifeq ($(IS_MACOS),true)
+	@-pkill -f "uvicorn src.app:app" 2>/dev/null || true
+endif
 
-.PHONY: dev dev-down dev-shell prod prod-down clean
+.PHONY: ollama neo4j stt tts assistant proxy \
+        shared shared-build shared-down \
+        dev dev-build dev-rebuild dev-down \
+        prod prod-build prod-rebuild prod-down \
+        prod-macos prod-macos-down \
+        echo logs logs-ui clean
