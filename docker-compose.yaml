@@ -91,7 +91,7 @@ services:
     depends_on:
       # stt is run locally on macOS, dependency is managed by makefile
       - tts
-      # ollama and neo4j are shared profiles, so they can be launched separately in dev mode
+      # Ollama and Neo4j are shared profiles, so they can be launched separately in dev mode
       # the makefile will ensure they are launched in both dev and prod mode
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
