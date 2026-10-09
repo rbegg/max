@@ -11,6 +11,7 @@ IS_MACOS := $(if $(filter Darwin,$(UNAME_S)),true,false)
 # --- Read Feature Flags from .env files ---
 DEV_ENABLE_GPU     := $(shell grep -m1 '^ENABLE_GPU=' .env.dev 2>/dev/null | cut -d= -f2)
 DEV_ENABLE_LOGGING := $(shell grep -m1 '^ENABLE_LOGGING=' .env.dev 2>/dev/null | cut -d= -f2)
+DEV_OLLAMA_CONTEXT_LENGTH := $(shell grep -m1 '^OLLAMA_CONTEXT_LENGTH=' .env.dev 2>/dev/null | cut -d= -f2)
 PROD_ENABLE_GPU    := $(shell grep -m1 '^ENABLE_GPU=' .env 2>/dev/null | cut -d= -f2)
 PROD_ENABLE_LOGGING:= $(shell grep -m1 '^ENABLE_LOGGING=' .env 2>/dev/null | cut -d= -f2)
 
@@ -37,7 +38,7 @@ PROD_MACOS_CORE      = docker compose --env-file .env -f docker-compose.yaml $(P
 ollama:
 ifeq ($(IS_MACOS),true)
 	@echo "Opening native Ollama in a new Terminal window..."
-	@pgrep -x "ollama" >/dev/null || osascript -e 'tell application "Terminal" to do script "ollama serve"'
+	@pgrep -x "ollama" >/dev/null || osascript -e 'tell application "Terminal" to do script "$(if $(DEV_OLLAMA_CONTEXT_LENGTH),OLLAMA_CONTEXT_LENGTH=$(DEV_OLLAMA_CONTEXT_LENGTH) )ollama serve"'
 else
 	$(DEV_SHARED_COMPOSE) up -d ollama
 endif
